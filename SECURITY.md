@@ -4,7 +4,7 @@
 
 **DO NOT CREATE A GITHUB ISSUE** to report a security problem.
 
-Instead please use this [Report a Vulnerability](https://github.com/regolith-labs/ore/security/advisories/new) link.
+Instead please use this [Report a Vulnerability](https://github.com/regolith-labs/ore-stake/security/advisories/new) link.
 Provide a helpful title, detailed description of the vulnerability and an exploit
 proof-of-concept. Speculative submissions without proof-of-concept will be closed
 with no further consideration.

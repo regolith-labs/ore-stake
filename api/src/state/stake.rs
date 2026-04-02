@@ -14,18 +14,6 @@ pub struct Stake {
     /// The balance of this stake account.
     pub balance: u64,
 
-    /// Buffer a (placeholder)
-    pub buffer_a: u64,
-
-    /// Buffer b (placeholder)
-    pub buffer_b: u64,
-
-    /// Buffer c (placeholder)
-    pub buffer_c: u64,
-
-    /// Buffer d (placeholder)
-    pub buffer_d: u64,
-
     /// The lamport reserve to pay fees for auto-compounding bots.
     pub compound_fee_reserve: u64,
 
@@ -46,9 +34,6 @@ pub struct Stake {
 
     /// The total amount of ORE this staker has earned over its lifetime.
     pub lifetime_rewards: u64,
-
-    /// Buffer f (placeholder)
-    pub buffer_f: u64,
 }
 
 impl Stake {

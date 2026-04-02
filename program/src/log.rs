@@ -7,9 +7,11 @@ pub fn process_log(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult 
     let [signer_info] = accounts else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };
-    signer_info.is_signer()?.as_account::<Board>(&ore_api::ID)?;
+    signer_info
+        .is_signer()?
+        .as_account::<Treasury>(&ore_api::ID)?;
 
-    // For data integrity, only the board can log messages.
+    // For data integrity, only the treasury can log messages.
 
     Ok(())
 }
