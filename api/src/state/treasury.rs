@@ -3,10 +3,7 @@ use steel::*;
 
 use super::OreAccount;
 
-// TODO Rename. It doesn't hold any tokens so it shouldn't be named Treasury.
-
-/// Treasury is a singleton account which is the mint authority for the ORE token and the authority of
-/// the program's global token account.
+/// Treasury is a singleton account which tracks top level protocol balances and holds onto staking yield.
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable, Serialize, Deserialize)]
 pub struct Treasury {

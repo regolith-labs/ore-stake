@@ -1,10 +1,12 @@
-use ore_api::prelude::*;
+use ore_stake_api::prelude::*;
 use solana_program::log::sol_log;
 use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Withdraws ORE from the staking contract.
 pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
+    panic!("Disabled");
+
     // Parse data.
     let args = Withdraw::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
@@ -20,10 +22,10 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     recipient_info.is_writable()?;
     let stake = stake_info
-        .as_account_mut::<Stake>(&ore_api::ID)?
+        .as_account_mut::<Stake>(&ore_stake_api::ID)?
         .assert_mut(|s| s.authority == *signer_info.key)?;
     stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_api::ID)?;
+    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;

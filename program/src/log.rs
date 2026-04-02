@@ -1,4 +1,4 @@
-use ore_api::prelude::*;
+use ore_stake_api::prelude::*;
 use steel::*;
 
 /// No-op, use instruction data for logging w/o truncation.
@@ -9,7 +9,7 @@ pub fn process_log(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult 
     };
     signer_info
         .is_signer()?
-        .as_account::<Treasury>(&ore_api::ID)?;
+        .as_account::<Treasury>(&ore_stake_api::ID)?;
 
     // For data integrity, only the treasury can log messages.
 

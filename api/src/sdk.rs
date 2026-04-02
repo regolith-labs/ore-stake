@@ -130,3 +130,47 @@ pub fn compound_yield(signer: Pubkey) -> Instruction {
         data: CompoundYield {}.to_bytes(),
     }
 }
+
+// let [payer_info, mint_info, old_stake_info, old_stake_tokens_info, stake_info, stake_tokens_info, system_program, token_program, associated_token_program] =
+
+pub fn migrate_stake(payer: Pubkey, authority: Pubkey) -> Instruction {
+    let mint_address = MINT_ADDRESS;
+    let old_stake_info = ore_api::prelude::stake_pda(authority).0;
+    let old_stake_tokens_info = get_associated_token_address(&old_stake_info, &MINT_ADDRESS);
+    let stake_info = stake_pda(authority).0;
+    let stake_tokens_info = get_associated_token_address(&stake_info, &MINT_ADDRESS);
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(payer, true),
+            AccountMeta::new(mint_address, false),
+            AccountMeta::new(old_stake_info, true),
+            AccountMeta::new(old_stake_tokens_info, false),
+            AccountMeta::new(stake_info, false),
+            AccountMeta::new(stake_tokens_info, false),
+            AccountMeta::new_readonly(system_program::ID, false),
+            AccountMeta::new_readonly(spl_token::ID, false),
+            AccountMeta::new_readonly(spl_associated_token_account::ID, false),
+        ],
+        data: MigrateStake {}.to_bytes(),
+    }
+}
+
+pub fn initialize(signer: Pubkey) -> Instruction {
+    let mint_address = MINT_ADDRESS;
+    let treasury_address = treasury_pda().0;
+    let treasury_tokens_info = treasury_tokens_address();
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(signer, true),
+            AccountMeta::new(mint_address, false),
+            AccountMeta::new(treasury_address, false),
+            AccountMeta::new(treasury_tokens_info, false),
+            AccountMeta::new_readonly(system_program::ID, false),
+            AccountMeta::new_readonly(spl_token::ID, false),
+            AccountMeta::new_readonly(spl_associated_token_account::ID, false),
+        ],
+        data: Initialize {}.to_bytes(),
+    }
+}

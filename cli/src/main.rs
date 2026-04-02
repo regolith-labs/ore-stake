@@ -1,6 +1,6 @@
 use std::str::FromStr;
 
-use ore_api::prelude::*;
+use ore_stake_api::prelude::*;
 use solana_account_decoder::UiAccountEncoding;
 use solana_client::{
     client_error::{reqwest::StatusCode, ClientErrorKind},
@@ -34,6 +34,9 @@ async fn main() {
         .expect("Missing COMMAND env var")
         .as_str()
     {
+        "initialize" => {
+            initialize(&rpc, &payer).await.unwrap();
+        }
         "treasury" => {
             log_treasury(&rpc).await.unwrap();
         }
@@ -48,6 +51,15 @@ async fn main() {
         }
         _ => panic!("Invalid command"),
     };
+}
+
+async fn initialize(
+    rpc: &RpcClient,
+    payer: &solana_sdk::signer::keypair::Keypair,
+) -> Result<(), anyhow::Error> {
+    let ix = ore_stake_api::sdk::initialize(payer.pubkey());
+    submit_transaction(rpc, payer, &[ix]).await?;
+    Ok(())
 }
 
 async fn lut(
@@ -114,7 +126,7 @@ async fn log_stake(
     let authority = std::env::var("AUTHORITY").unwrap_or(payer.pubkey().to_string());
     let authority = Pubkey::from_str(&authority).expect("Invalid AUTHORITY");
     let treasury = get_treasury(&rpc).await?;
-    let staker_address = ore_api::state::stake_pda(authority).0;
+    let staker_address = ore_stake_api::state::stake_pda(authority).0;
     let mut stake = get_stake(rpc, authority).await?;
     stake.update_rewards(&treasury);
     println!("Stake");
@@ -187,7 +199,7 @@ pub async fn get_address_lookup_table_accounts(
     Ok(accounts)
 }
 async fn log_treasury(rpc: &RpcClient) -> Result<(), anyhow::Error> {
-    let treasury_address = ore_api::state::treasury_pda().0;
+    let treasury_address = ore_stake_api::state::treasury_pda().0;
     let treasury = get_treasury(rpc).await?;
     println!("Treasury");
     println!("  address: {}", treasury_address);
@@ -214,7 +226,7 @@ async fn log_clock(rpc: &RpcClient) -> Result<(), anyhow::Error> {
 }
 
 async fn get_treasury(rpc: &RpcClient) -> Result<Treasury, anyhow::Error> {
-    let treasury_pda = ore_api::state::treasury_pda();
+    let treasury_pda = ore_stake_api::state::treasury_pda();
     let account = rpc.get_account(&treasury_pda.0).await?;
     let treasury = Treasury::try_from_bytes(&account.data)?;
     Ok(*treasury)
@@ -227,7 +239,7 @@ async fn get_clock(rpc: &RpcClient) -> Result<Clock, anyhow::Error> {
 }
 
 async fn get_stake(rpc: &RpcClient, authority: Pubkey) -> Result<Stake, anyhow::Error> {
-    let stake_pda = ore_api::state::stake_pda(authority);
+    let stake_pda = ore_stake_api::state::stake_pda(authority);
     let account = rpc.get_account(&stake_pda.0).await?;
     let stake = Stake::try_from_bytes(&account.data)?;
     Ok(*stake)

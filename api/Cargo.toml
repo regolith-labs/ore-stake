@@ -1,5 +1,5 @@
 [package]
-name = "ore-api"
+name = "ore-stake-api"
 description.workspace = true
 version.workspace = true
 edition.workspace = true
@@ -12,9 +12,8 @@ keywords.workspace = true
 [dependencies]
 base64.workspace = true
 bytemuck.workspace = true
-entropy-api.workspace = true
 num_enum.workspace = true
-ore-mint-api.workspace = true
+ore-api.workspace = true
 serde.workspace = true
 solana-program.workspace = true
 spl-token.workspace = true

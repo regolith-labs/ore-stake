@@ -1,10 +1,12 @@
-use ore_api::prelude::*;
+use ore_stake_api::prelude::*;
 use solana_program::log::sol_log;
 use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Deposits ORE into the staking contract.
 pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
+    panic!("Disabled");
+
     // Parse data.
     let args = Deposit::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
@@ -24,7 +26,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         .is_writable()?
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?;
     stake_info.is_writable()?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_api::ID)?;
+    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
@@ -35,10 +37,10 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
             stake_info,
             system_program,
             &payer_info,
-            &ore_api::ID,
+            &ore_stake_api::ID,
             &[STAKE, &signer_info.key.to_bytes()],
         )?;
-        let stake = stake_info.as_account_mut::<Stake>(&ore_api::ID)?;
+        let stake = stake_info.as_account_mut::<Stake>(&ore_stake_api::ID)?;
         stake.authority = *signer_info.key;
         stake.balance = 0;
         stake.compound_fee_reserve = 0;
@@ -51,7 +53,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         stake
     } else {
         stake_info
-            .as_account_mut::<Stake>(&ore_api::ID)?
+            .as_account_mut::<Stake>(&ore_stake_api::ID)?
             .assert_mut(|s| s.authority == *signer_info.key)?
     };
 
