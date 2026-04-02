@@ -1,6 +1,6 @@
 # ORE
 
-ORE Stake is a staking protocol for ORE.
+A staking protocol for ORE holders to receive a share of protocol revenues.
 
 ## API
 - [`Consts`](api/src/consts.rs) – Program constants.
