@@ -1,5 +1,5 @@
 use ore_stake_api::prelude::*;
-use solana_program::{log::sol_log, pubkey};
+use solana_program::log::sol_log;
 use spl_token::amount_to_ui_amount;
 use steel::*;
 

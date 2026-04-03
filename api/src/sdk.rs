@@ -150,8 +150,6 @@ pub fn initialize(signer: Pubkey) -> Instruction {
     }
 }
 
-// let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, system_program, token_program, associated_token_program] =
-
 pub fn distribute(signer: Pubkey, amount: u64) -> Instruction {
     let sender_address = get_associated_token_address(&signer, &MINT_ADDRESS);
     let ore_mint_info = MINT_ADDRESS;
