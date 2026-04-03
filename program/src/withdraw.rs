@@ -3,8 +3,6 @@ use solana_program::log::sol_log;
 use spl_token::amount_to_ui_amount;
 use steel::*;
 
-use crate::TESTER_WALLET;
-
 /// Withdraws ORE from the staking contract.
 pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
     // Parse data.
@@ -29,11 +27,6 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
-
-    // Restrict to tester wallet.
-    if *signer_info.key != TESTER_WALLET {
-        panic!("Only tester wallet can withdraw");
-    }
 
     // Open recipient token account.
     if recipient_info.data_is_empty() {

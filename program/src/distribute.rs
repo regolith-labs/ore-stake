@@ -3,8 +3,6 @@ use steel::*;
 
 /// Distributes ORE from the treasury to the sender.
 pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    panic!("Disabled");
-
     // Parse data.
     let args = Distribute::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);

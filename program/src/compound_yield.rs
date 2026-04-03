@@ -5,8 +5,6 @@ use solana_program::log::sol_log;
 use spl_token::amount_to_ui_amount;
 use steel::*;
 
-use crate::TESTER_WALLET;
-
 /// Compounds yield from the staking contract.
 pub fn process_compound_yield(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
     // Load accounts.
@@ -31,11 +29,6 @@ pub fn process_compound_yield(accounts: &[AccountInfo<'_>], _data: &[u8]) -> Pro
         .as_associated_token_account(&treasury_info.key, &mint_info.key)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
-
-    // Restrict to tester wallet.
-    if *signer_info.key != TESTER_WALLET {
-        panic!("Only tester wallet can compound yield");
-    }
 
     // Claim yield from stake account.
     let amount = stake.claim(u64::MAX, &clock, treasury);
