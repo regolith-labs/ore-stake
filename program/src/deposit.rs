@@ -3,10 +3,10 @@ use solana_program::log::sol_log;
 use spl_token::amount_to_ui_amount;
 use steel::*;
 
+use crate::TESTER_WALLET;
+
 /// Deposits ORE into the staking contract.
 pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    panic!("Disabled");
-
     // Parse data.
     let args = Deposit::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
@@ -30,6 +30,11 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
+
+    // Restrict to tester wallet.
+    if *signer_info.key != TESTER_WALLET {
+        panic!("Only tester wallet can deposit");
+    }
 
     // Open stake account.
     let stake = if stake_info.data_is_empty() {

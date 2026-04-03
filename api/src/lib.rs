@@ -16,5 +16,4 @@ pub mod prelude {
 
 use steel::*;
 
-// TODO Update ID.
 declare_id!("STkEAu2cEyQp5ktgUauRVq8es6mEP2w6ixw4NEd5tDJ");

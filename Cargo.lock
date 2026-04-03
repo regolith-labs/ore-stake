@@ -2666,7 +2666,7 @@ dependencies = [
 
 [[package]]
 name = "ore-cli"
-version = "0.1.2"
+version = "0.1.5"
 dependencies = [
  "anyhow",
  "base64 0.22.1",
@@ -2707,12 +2707,11 @@ dependencies = [
 
 [[package]]
 name = "ore-stake-api"
-version = "0.1.2"
+version = "0.1.5"
 dependencies = [
  "base64 0.22.1",
  "bytemuck",
  "num_enum",
- "ore-api",
  "serde",
  "solana-program",
  "spl-associated-token-account",
@@ -2724,7 +2723,7 @@ dependencies = [
 
 [[package]]
 name = "ore-stake-program"
-version = "0.1.2"
+version = "0.1.5"
 dependencies = [
  "bincode",
  "ore-api",

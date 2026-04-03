@@ -1,12 +1,12 @@
 use ore_stake_api::prelude::*;
-use solana_program::log::sol_log;
+use solana_program::{log::sol_log, pubkey};
 use spl_token::amount_to_ui_amount;
 use steel::*;
 
+pub const TESTER_WALLET: Pubkey = pubkey!("iqsobyCTnvKErPnQybqTY6ZvhQjpmCverBbxDJfTTWR");
+
 /// Claims yield from the staking contract.
 pub fn process_claim_yield(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
-    panic!("Disabled");
-
     // Parse data.
     let args = ClaimYield::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
@@ -31,6 +31,11 @@ pub fn process_claim_yield(accounts: &[AccountInfo<'_>], data: &[u8]) -> Program
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
+
+    // Restrict to tester wallet.
+    if *signer_info.key != TESTER_WALLET {
+        panic!("Only tester wallet can claim yield");
+    }
 
     // Open recipient token account.
     if recipient_info.data_is_empty() {

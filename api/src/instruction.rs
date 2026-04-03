@@ -13,10 +13,6 @@ pub enum OreStakeInstruction {
     Withdraw = 11,
     ClaimYield = 12,
     CompoundYield = 13,
-
-    // Migration
-    MigrateStake = 20,
-    MigrateTreasury = 21,
 }
 
 #[repr(C)]
@@ -56,14 +52,6 @@ pub struct Distribute {
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct Initialize {}
 
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct MigrateStake {}
-
-#[repr(C)]
-#[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct MigrateTreasury {}
-
 instruction!(OreStakeInstruction, Log);
 instruction!(OreStakeInstruction, Initialize);
 instruction!(OreStakeInstruction, Distribute);
@@ -71,5 +59,3 @@ instruction!(OreStakeInstruction, Deposit);
 instruction!(OreStakeInstruction, Withdraw);
 instruction!(OreStakeInstruction, ClaimYield);
 instruction!(OreStakeInstruction, CompoundYield);
-instruction!(OreStakeInstruction, MigrateStake);
-instruction!(OreStakeInstruction, MigrateTreasury);

@@ -4,8 +4,6 @@ mod deposit;
 mod distribute;
 mod initialize;
 mod log;
-mod migrate_stake;
-mod migrate_treasury;
 mod withdraw;
 
 use claim_yield::*;
@@ -14,8 +12,6 @@ use deposit::*;
 use distribute::*;
 use initialize::*;
 use log::*;
-use migrate_stake::*;
-use migrate_treasury::*;
 use withdraw::*;
 
 use ore_stake_api::instruction::*;
@@ -40,10 +36,6 @@ pub fn process_instruction(
         OreStakeInstruction::Initialize => process_initialize(accounts, data)?,
         OreStakeInstruction::Log => process_log(accounts, data)?,
         OreStakeInstruction::Distribute => process_distribute(accounts, data)?,
-
-        // Migration
-        OreStakeInstruction::MigrateStake => process_migrate_stake(accounts, data)?,
-        OreStakeInstruction::MigrateTreasury => process_migrate_treasury(accounts, data)?,
     }
 
     Ok(())

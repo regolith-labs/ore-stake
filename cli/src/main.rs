@@ -49,8 +49,47 @@ async fn main() {
         "lut" => {
             lut(&rpc, &payer).await.unwrap();
         }
+        "validate" => {
+            validate(&rpc, &payer).await.unwrap();
+        }
         _ => panic!("Invalid command"),
     };
+}
+
+async fn validate(
+    rpc: &RpcClient,
+    payer: &solana_sdk::signer::keypair::Keypair,
+) -> Result<(), anyhow::Error> {
+    let stakes = get_stakes(rpc).await?;
+    let treasury = get_treasury(rpc).await?;
+    let mut total_rewards = 0;
+    let mut total_deposits = 0;
+    for (i, (address, mut stake)) in stakes.iter().enumerate() {
+        stake.update_rewards(&treasury);
+        let ata = get_associated_token_address(&address, &MINT_ADDRESS);
+        let balance = rpc.get_token_account_balance(&ata).await?;
+        assert!(balance.amount.parse::<u64>().unwrap() >= stake.balance);
+        total_rewards += stake.rewards;
+        total_deposits += stake.balance;
+        println!("✅ {}: {}", i, stake.authority);
+    }
+
+    let treasury_ata = get_associated_token_address(&treasury_pda().0, &MINT_ADDRESS);
+    let treasury_balance = rpc.get_token_account_balance(&treasury_ata).await?;
+    assert!(treasury_balance.amount.parse::<u64>().unwrap() >= total_rewards);
+    assert_eq!(treasury.total_staked, total_deposits);
+    println!(
+        "✅ Treasury rewards: {} ORE ==  {} ORE",
+        amount_to_ui_amount(total_rewards, TOKEN_DECIMALS),
+        treasury_balance.ui_amount_string
+    );
+    println!(
+        "✅ Treasury deposits: {} ORE ==  {} ORE",
+        amount_to_ui_amount(total_deposits, TOKEN_DECIMALS),
+        amount_to_ui_amount(treasury.total_staked, TOKEN_DECIMALS)
+    );
+
+    Ok(())
 }
 
 async fn initialize(
@@ -212,6 +251,13 @@ async fn log_treasury(rpc: &RpcClient) -> Result<(), anyhow::Error> {
         amount_to_ui_amount(treasury.total_staked, TOKEN_DECIMALS)
     );
     Ok(())
+}
+
+async fn get_stakes(rpc: &RpcClient) -> Result<Vec<(Pubkey, Stake)>, anyhow::Error> {
+    let stakes =
+        get_program_accounts::<ore_stake_api::prelude::Stake>(rpc, ore_stake_api::ID, vec![])
+            .await?;
+    Ok(stakes)
 }
 
 async fn log_clock(rpc: &RpcClient) -> Result<(), anyhow::Error> {
