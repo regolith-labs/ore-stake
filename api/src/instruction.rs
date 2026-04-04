@@ -11,8 +11,8 @@ pub enum OreStakeInstruction {
     // Staker
     Deposit = 10,
     Withdraw = 11,
-    ClaimYield = 12,
-    CompoundYield = 13,
+    Claim = 12,
+    Compound = 13,
 }
 
 #[repr(C)]
@@ -34,13 +34,13 @@ pub struct Withdraw {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct ClaimYield {
+pub struct Claim {
     pub amount: [u8; 8],
 }
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct CompoundYield {}
+pub struct Compound {}
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
@@ -57,5 +57,5 @@ instruction!(OreStakeInstruction, Init);
 instruction!(OreStakeInstruction, Distribute);
 instruction!(OreStakeInstruction, Deposit);
 instruction!(OreStakeInstruction, Withdraw);
-instruction!(OreStakeInstruction, ClaimYield);
-instruction!(OreStakeInstruction, CompoundYield);
+instruction!(OreStakeInstruction, Claim);
+instruction!(OreStakeInstruction, Compound);

@@ -6,7 +6,7 @@ use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Compounds yield from the staking contract.
-pub fn process_compound_yield(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
+pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
     // Load accounts.
     let clock = Clock::get()?;
     let [signer_info, mint_info, stake_info, stake_tokens_info, treasury_info, treasury_tokens_info, system_program, token_program] =

@@ -83,7 +83,7 @@ pub fn withdraw(signer: Pubkey, amount: u64) -> Instruction {
     }
 }
 
-pub fn claim_yield(signer: Pubkey, amount: u64) -> Instruction {
+pub fn claim(signer: Pubkey, amount: u64) -> Instruction {
     let stake_address = stake_pda(signer).0;
     let mint_address = MINT_ADDRESS;
     let recipient_address = get_associated_token_address(&signer, &MINT_ADDRESS);
@@ -102,14 +102,14 @@ pub fn claim_yield(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
         ],
-        data: ClaimYield {
+        data: Claim {
             amount: amount.to_le_bytes(),
         }
         .to_bytes(),
     }
 }
 
-pub fn compound_yield(signer: Pubkey) -> Instruction {
+pub fn compound(signer: Pubkey) -> Instruction {
     let stake_address = stake_pda(signer).0;
     let mint_address = MINT_ADDRESS;
     let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);
@@ -127,7 +127,7 @@ pub fn compound_yield(signer: Pubkey) -> Instruction {
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
         ],
-        data: CompoundYield {}.to_bytes(),
+        data: Compound {}.to_bytes(),
     }
 }
 

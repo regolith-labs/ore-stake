@@ -4,9 +4,9 @@ use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Claims yield from the staking contract.
-pub fn process_claim_yield(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
+pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
     // Parse data.
-    let args = ClaimYield::try_from_bytes(data)?;
+    let args = Claim::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
 
     // Load accounts.
