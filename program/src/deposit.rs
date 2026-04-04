@@ -70,9 +70,6 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
     }
 
-    // Only allow deposits from seekers.
-    // assert!(stake.is_seeker == 1, "Only seekers can deposit stake");
-
     // Deposit into stake account.
     let amount = stake.deposit(amount, &clock, treasury, &sender);
 

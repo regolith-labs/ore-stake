@@ -36,7 +36,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     // Deposit into stake account.
     let amount = stake.deposit(amount, &clock, treasury, &treasury_tokens);
 
-    // Transfer ORE from treasury to stake.
+    // Transfer ORE rewards from treasury to stake deposits.
     transfer_signed(
         treasury_info,
         treasury_tokens_info,
@@ -50,7 +50,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     stake.compound_fee_reserve -= COMPOUND_FEE_PER_TRANSACTION;
     stake_info.send(COMPOUND_FEE_PER_TRANSACTION, &signer_info);
 
-    // Log claim.
+    // Log compound.
     sol_log(
         &format!(
             "Compounding {} ORE",

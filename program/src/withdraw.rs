@@ -43,7 +43,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
         recipient_info.as_associated_token_account(&signer_info.key, &mint_info.key)?;
     }
 
-    // Deposit into stake account.
+    // Withdraw from stake account.
     let amount = stake.withdraw(amount, &clock, treasury);
 
     // Transfer ORE to recipient.

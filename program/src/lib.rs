@@ -26,16 +26,13 @@ pub fn process_instruction(
     let (ix, data) = parse_instruction(&ore_stake_api::ID, program_id, data)?;
 
     match ix {
-        // Staker
-        OreStakeInstruction::Deposit => process_deposit(accounts, data)?,
-        OreStakeInstruction::Withdraw => process_withdraw(accounts, data)?,
         OreStakeInstruction::Claim => process_claim(accounts, data)?,
         OreStakeInstruction::Compound => process_compound(accounts, data)?,
-
-        // Misc
+        OreStakeInstruction::Deposit => process_deposit(accounts, data)?,
+        OreStakeInstruction::Distribute => process_distribute(accounts, data)?,
         OreStakeInstruction::Init => process_init(accounts, data)?,
         OreStakeInstruction::Log => process_log(accounts, data)?,
-        OreStakeInstruction::Distribute => process_distribute(accounts, data)?,
+        OreStakeInstruction::Withdraw => process_withdraw(accounts, data)?,
     }
 
     Ok(())
