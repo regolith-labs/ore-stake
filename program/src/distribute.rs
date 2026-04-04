@@ -22,12 +22,12 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
     token_program.is_program(&spl_token::ID)?;
 
-    // Update treasury.
+    // Update rewards factor.
     if treasury.total_staked > 0 {
-        treasury.stake_rewards_factor += Numeric::from_fraction(amount, treasury.total_staked);
+        treasury.rewards_factor += Numeric::from_fraction(amount, treasury.total_staked);
     }
 
-    // Create treasury.
+    // Transfer tokens to treasury for distribution to stakers
     transfer(
         signer_info,
         sender_info,

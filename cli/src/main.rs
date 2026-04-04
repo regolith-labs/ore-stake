@@ -243,8 +243,8 @@ async fn log_treasury(rpc: &RpcClient) -> Result<(), anyhow::Error> {
     println!("Treasury");
     println!("  address: {}", treasury_address);
     println!(
-        "  stake_rewards_factor: {}",
-        treasury.stake_rewards_factor.to_i80f48().to_string()
+        "  rewards_factor: {}",
+        treasury.rewards_factor.to_i80f48().to_string()
     );
     println!(
         "  total_staked: {} ORE",
