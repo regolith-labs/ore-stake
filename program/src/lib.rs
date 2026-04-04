@@ -2,7 +2,7 @@ mod claim_yield;
 mod compound_yield;
 mod deposit;
 mod distribute;
-mod initialize;
+mod init;
 mod log;
 mod withdraw;
 
@@ -10,7 +10,7 @@ use claim_yield::*;
 use compound_yield::*;
 use deposit::*;
 use distribute::*;
-use initialize::*;
+use init::*;
 use log::*;
 use withdraw::*;
 
@@ -33,7 +33,7 @@ pub fn process_instruction(
         OreStakeInstruction::CompoundYield => process_compound_yield(accounts, data)?,
 
         // Misc
-        OreStakeInstruction::Initialize => process_initialize(accounts, data)?,
+        OreStakeInstruction::Init => process_init(accounts, data)?,
         OreStakeInstruction::Log => process_log(accounts, data)?,
         OreStakeInstruction::Distribute => process_distribute(accounts, data)?,
     }

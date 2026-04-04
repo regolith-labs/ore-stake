@@ -131,7 +131,7 @@ pub fn compound_yield(signer: Pubkey) -> Instruction {
     }
 }
 
-pub fn initialize(signer: Pubkey) -> Instruction {
+pub fn init(signer: Pubkey) -> Instruction {
     let mint_address = MINT_ADDRESS;
     let treasury_address = treasury_pda().0;
     let treasury_tokens_info = treasury_tokens_address();
@@ -146,7 +146,7 @@ pub fn initialize(signer: Pubkey) -> Instruction {
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
         ],
-        data: Initialize {}.to_bytes(),
+        data: Init {}.to_bytes(),
     }
 }
 

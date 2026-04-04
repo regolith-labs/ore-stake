@@ -34,8 +34,8 @@ async fn main() {
         .expect("Missing COMMAND env var")
         .as_str()
     {
-        "initialize" => {
-            initialize(&rpc, &payer).await.unwrap();
+        "init" => {
+            init(&rpc, &payer).await.unwrap();
         }
         "treasury" => {
             log_treasury(&rpc).await.unwrap();
@@ -92,11 +92,11 @@ async fn validate(
     Ok(())
 }
 
-async fn initialize(
+async fn init(
     rpc: &RpcClient,
     payer: &solana_sdk::signer::keypair::Keypair,
 ) -> Result<(), anyhow::Error> {
-    let ix = ore_stake_api::sdk::initialize(payer.pubkey());
+    let ix = ore_stake_api::sdk::init(payer.pubkey());
     submit_transaction(rpc, payer, &[ix]).await?;
     Ok(())
 }

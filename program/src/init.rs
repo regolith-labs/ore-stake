@@ -1,18 +1,15 @@
 use ore_stake_api::prelude::*;
-use solana_program::pubkey;
 use steel::*;
 
-pub const ADMIN_ADDRESS: Pubkey = pubkey!("HBUh9g46wk2X89CvaNN15UmsznP59rh6od1h8JwYAopk");
-
 /// Initialize the program.
-pub fn process_initialize(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
+pub fn process_init(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
     // Load accounts.
     let [signer_info, ore_mint_info, treasury_info, treasury_tokens_info, system_program, token_program, associated_token_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
     };
-    signer_info.is_signer()?.has_address(&ADMIN_ADDRESS)?;
+    signer_info.is_signer()?;
     ore_mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     treasury_info.is_empty()?.is_writable()?;
     treasury_tokens_info.is_empty()?.is_writable()?;

@@ -5,7 +5,7 @@ use steel::*;
 pub enum OreStakeInstruction {
     // Misc
     Log = 0,
-    Initialize = 1,
+    Init = 1,
     Distribute = 2,
 
     // Staker
@@ -50,10 +50,10 @@ pub struct Distribute {
 
 #[repr(C)]
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
-pub struct Initialize {}
+pub struct Init {}
 
 instruction!(OreStakeInstruction, Log);
-instruction!(OreStakeInstruction, Initialize);
+instruction!(OreStakeInstruction, Init);
 instruction!(OreStakeInstruction, Distribute);
 instruction!(OreStakeInstruction, Deposit);
 instruction!(OreStakeInstruction, Withdraw);
