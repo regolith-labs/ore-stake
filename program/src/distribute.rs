@@ -16,7 +16,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     signer_info.is_signer()?;
     sender_info
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?
-        .assert_mut(|s| s.amount() >= amount)?;
+        .assert(|s| s.amount() >= amount)?;
     ore_mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
     treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
