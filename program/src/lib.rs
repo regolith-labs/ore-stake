@@ -1,4 +1,5 @@
 mod claim;
+mod close;
 mod compound;
 mod deposit;
 mod distribute;
@@ -7,6 +8,7 @@ mod log;
 mod withdraw;
 
 use claim::*;
+use close::*;
 use compound::*;
 use deposit::*;
 use distribute::*;
@@ -27,6 +29,7 @@ pub fn process_instruction(
 
     match ix {
         OreStakeInstruction::Claim => process_claim(accounts, data)?,
+        OreStakeInstruction::Close => process_close(accounts)?,
         OreStakeInstruction::Compound => process_compound(accounts, data)?,
         OreStakeInstruction::Deposit => process_deposit(accounts, data)?,
         OreStakeInstruction::Distribute => process_distribute(accounts, data)?,

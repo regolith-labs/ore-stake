@@ -13,6 +13,7 @@ pub enum OreStakeInstruction {
     Withdraw = 11,
     Claim = 12,
     Compound = 13,
+    Close = 14,
 }
 
 #[repr(C)]
@@ -52,6 +53,10 @@ pub struct Distribute {
 #[derive(Clone, Copy, Debug, Pod, Zeroable)]
 pub struct Init {}
 
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Pod, Zeroable)]
+pub struct Close {}
+
 instruction!(OreStakeInstruction, Log);
 instruction!(OreStakeInstruction, Init);
 instruction!(OreStakeInstruction, Distribute);
@@ -59,3 +64,4 @@ instruction!(OreStakeInstruction, Deposit);
 instruction!(OreStakeInstruction, Withdraw);
 instruction!(OreStakeInstruction, Claim);
 instruction!(OreStakeInstruction, Compound);
+instruction!(OreStakeInstruction, Close);
