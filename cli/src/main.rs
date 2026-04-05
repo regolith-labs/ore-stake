@@ -8,9 +8,8 @@ use solana_client::{
     rpc_config::{RpcAccountInfoConfig, RpcProgramAccountsConfig},
     rpc_filter::{Memcmp, RpcFilterType},
 };
-use solana_sdk::pubkey;
 use solana_sdk::{
-    address_lookup_table::{state::AddressLookupTable, AddressLookupTableAccount},
+    address_lookup_table::AddressLookupTableAccount,
     compute_budget::ComputeBudgetInstruction,
     message::{v0::Message, VersionedMessage},
     native_token::lamports_to_sol,
@@ -20,7 +19,7 @@ use solana_sdk::{
 };
 use spl_associated_token_account::get_associated_token_address;
 use spl_token::amount_to_ui_amount;
-use steel::{AccountDeserialize, AccountMeta, Clock, Discriminator, Instruction};
+use steel::{AccountDeserialize, Discriminator, Instruction};
 
 #[tokio::main]
 async fn main() {
@@ -43,23 +42,14 @@ async fn main() {
         "stake" => {
             log_stake(&rpc, &payer).await.unwrap();
         }
-        "ata" => {
-            ata(&rpc, &payer).await.unwrap();
-        }
-        "lut" => {
-            lut(&rpc, &payer).await.unwrap();
-        }
         "validate" => {
-            validate(&rpc, &payer).await.unwrap();
+            validate(&rpc).await.unwrap();
         }
         _ => panic!("Invalid command"),
     };
 }
 
-async fn validate(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-) -> Result<(), anyhow::Error> {
+async fn validate(rpc: &RpcClient) -> Result<(), anyhow::Error> {
     let stakes = get_stakes(rpc).await?;
     let treasury = get_treasury(rpc).await?;
     let mut total_rewards = 0;
@@ -98,63 +88,6 @@ async fn init(
 ) -> Result<(), anyhow::Error> {
     let ix = ore_stake_api::sdk::init(payer.pubkey());
     submit_transaction(rpc, payer, &[ix]).await?;
-    Ok(())
-}
-
-async fn lut(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-) -> Result<(), anyhow::Error> {
-    let recent_slot = rpc.get_slot().await? - 4;
-    let (ix, lut_address) = solana_address_lookup_table_interface::instruction::create_lookup_table(
-        payer.pubkey(),
-        payer.pubkey(),
-        recent_slot,
-    );
-    let ex_ix = solana_address_lookup_table_interface::instruction::extend_lookup_table(
-        lut_address,
-        payer.pubkey(),
-        Some(payer.pubkey()),
-        vec![
-            pubkey!("HNWhK5f8RMWBqcA7mXJPaxdTPGrha3rrqUrri7HSKb3T"),
-            pubkey!("2wQ7J46uwK3VyrmAYe5E8KhCjTg8CTaFimh1ty2huuyY"),
-            pubkey!("DJqfQWB8tZE6fzqWa8okncDh7ciTuD8QQKp1ssNETWee"),
-            pubkey!("HLaJ3RiyoaxQzwJQbU2Gc5RTZtx8HKAMJgkf57qdgpFJ"),
-            pubkey!("8yS5zJTZa1Q1zQ1jsEAUnjAyMZfsNwvrgbDQp1ky2dr"),
-            pubkey!("7qBS6huLjjGyrnMMBNXpLZA73yiGc6ao9znj7f9RpF1L"),
-            pubkey!("3Mt1bpU3fnSXyPEm66HKKXyQTpLWrwYziPLqwTqK4ZT7"),
-            pubkey!("LBUZKhRxPF3XUpBCjp4YzTKgLccjZhTSDM9YuVaPwxo"),
-            pubkey!("oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp"),
-            pubkey!("So11111111111111111111111111111111111111112"),
-            pubkey!("TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"),
-            pubkey!("MemoSq4gqABAXKb96qnH8TysNcWxMyWCqXgDLGmfcHr"),
-            pubkey!("D1ZN9Wj1fRSUQfCjhvnu1hqDMT7hzjzBBpi12nVniYD6"),
-            pubkey!("8kqLv9cBUDCYEKCL3Dj2MkeXX3tdCqT8KZ3gpYp8BnGP"),
-            pubkey!("H38TVzkjAiAhBZR5SksbW8XDXP3N1ez4Tuna7uAW1Tsw"),
-            pubkey!("11111111111111111111111111111111"),
-            pubkey!("SysvarRent111111111111111111111111111111111"),
-        ],
-    );
-    let ix_1 = Instruction {
-        program_id: ix.program_id,
-        accounts: ix
-            .accounts
-            .iter()
-            .map(|a| AccountMeta::new(a.pubkey, a.is_signer))
-            .collect(),
-        data: ix.data,
-    };
-    let ix_2 = Instruction {
-        program_id: ex_ix.program_id,
-        accounts: ex_ix
-            .accounts
-            .iter()
-            .map(|a| AccountMeta::new(a.pubkey, a.is_signer))
-            .collect(),
-        data: ex_ix.data,
-    };
-    submit_transaction(rpc, payer, &[ix_1, ix_2]).await?;
-    println!("LUT address: {}", lut_address);
     Ok(())
 }
 
@@ -198,45 +131,6 @@ async fn log_stake(
     Ok(())
 }
 
-async fn ata(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-) -> Result<(), anyhow::Error> {
-    let user = pubkey!("FgZFnb3bi7QexKCdXWPwWy91eocUD7JCFySHb83vLoPD");
-    let token = pubkey!("8H8rPiWW4iTFCfEkSnf7jpqeNpFfvdH9gLouAL3Fe2Zx");
-    let ata = get_associated_token_address(&user, &token);
-    let ix = spl_associated_token_account::instruction::create_associated_token_account(
-        &payer.pubkey(),
-        &user,
-        &token,
-        &spl_token::ID,
-    );
-    submit_transaction(rpc, payer, &[ix]).await?;
-    let account = rpc.get_account(&ata).await?;
-    println!("ATA: {}", ata);
-    println!("Account: {:?}", account);
-    Ok(())
-}
-
-#[allow(dead_code)]
-pub async fn get_address_lookup_table_accounts(
-    rpc_client: &RpcClient,
-    addresses: Vec<Pubkey>,
-) -> Result<Vec<AddressLookupTableAccount>, anyhow::Error> {
-    let mut accounts = Vec::new();
-    for key in addresses {
-        if let Ok(account) = rpc_client.get_account(&key).await {
-            if let Ok(address_lookup_table_account) = AddressLookupTable::deserialize(&account.data)
-            {
-                accounts.push(AddressLookupTableAccount {
-                    key,
-                    addresses: address_lookup_table_account.addresses.to_vec(),
-                });
-            }
-        }
-    }
-    Ok(accounts)
-}
 async fn log_treasury(rpc: &RpcClient) -> Result<(), anyhow::Error> {
     let treasury_address = ore_stake_api::state::treasury_pda().0;
     let treasury = get_treasury(rpc).await?;
@@ -260,28 +154,11 @@ async fn get_stakes(rpc: &RpcClient) -> Result<Vec<(Pubkey, Stake)>, anyhow::Err
     Ok(stakes)
 }
 
-async fn log_clock(rpc: &RpcClient) -> Result<(), anyhow::Error> {
-    let clock = get_clock(&rpc).await?;
-    println!("Clock");
-    println!("  slot: {}", clock.slot);
-    println!("  epoch_start_timestamp: {}", clock.epoch_start_timestamp);
-    println!("  epoch: {}", clock.epoch);
-    println!("  leader_schedule_epoch: {}", clock.leader_schedule_epoch);
-    println!("  unix_timestamp: {}", clock.unix_timestamp);
-    Ok(())
-}
-
 async fn get_treasury(rpc: &RpcClient) -> Result<Treasury, anyhow::Error> {
     let treasury_pda = ore_stake_api::state::treasury_pda();
     let account = rpc.get_account(&treasury_pda.0).await?;
     let treasury = Treasury::try_from_bytes(&account.data)?;
     Ok(*treasury)
-}
-
-async fn get_clock(rpc: &RpcClient) -> Result<Clock, anyhow::Error> {
-    let data = rpc.get_account_data(&solana_sdk::sysvar::clock::ID).await?;
-    let clock = bincode::deserialize::<Clock>(&data)?;
-    Ok(clock)
 }
 
 async fn get_stake(rpc: &RpcClient, authority: Pubkey) -> Result<Stake, anyhow::Error> {

@@ -18,14 +18,14 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?
         .assert(|s| s.amount() >= amount)?;
     ore_mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let treasury = treasury_info
+        .as_account_mut::<Treasury>(&ore_stake_api::ID)?
+        .assert_mut_err(|t| t.total_staked > 0, OreStakeError::NoDeposits.into())?;
     treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
     token_program.is_program(&spl_token::ID)?;
 
     // Update rewards factor.
-    if treasury.total_staked > 0 {
-        treasury.rewards_factor += Numeric::from_fraction(amount, treasury.total_staked);
-    }
+    treasury.rewards_factor += Numeric::from_fraction(amount, treasury.total_staked);
 
     // Transfer tokens to treasury for distribution to stakers
     transfer(
