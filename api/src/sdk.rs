@@ -55,8 +55,6 @@ pub fn deposit(signer: Pubkey, payer: Pubkey, amount: u64, compound_fee: u64) ->
     }
 }
 
-// let [signer_info, mint_info, recipient_info, stake_info, stake_tokens_info, treasury_info, system_program, token_program, associated_token_program] =
-
 pub fn withdraw(signer: Pubkey, amount: u64) -> Instruction {
     let stake_address = stake_pda(signer).0;
     let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);

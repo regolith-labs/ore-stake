@@ -8,6 +8,9 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     // Parse data.
     let args = Withdraw::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
+    if amount == 0 {
+        return Err(OreStakeError::AmountZero.into());
+    }
 
     // Load accounts.
     let clock = Clock::get()?;

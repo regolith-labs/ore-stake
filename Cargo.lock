@@ -1203,19 +1203,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "entropy-api"
-version = "0.1.4"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "bfdd094bc029452f4cd7627872362dea607ee9569cc09c84b53810f62449b126"
-dependencies = [
- "bytemuck",
- "num_enum",
- "solana-program",
- "steel",
- "thiserror 1.0.69",
-]
-
-[[package]]
 name = "enum-iterator"
 version = "1.5.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2645,26 +2632,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "04744f49eae99ab78e0d5c0b603ab218f515ea8cfe5a456d7629ad883a3b6e7d"
 
 [[package]]
-name = "ore-api"
-version = "3.7.27"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "71ba2b7a7eab133e0d017d10875207473df5addc2a6296d4ae6f6023eb0e4fb6"
-dependencies = [
- "base64 0.22.1",
- "bytemuck",
- "entropy-api",
- "num_enum",
- "ore-mint-api",
- "serde",
- "solana-program",
- "spl-associated-token-account",
- "spl-token 4.0.2",
- "spl-token-2022 7.0.0",
- "steel",
- "thiserror 1.0.69",
-]
-
-[[package]]
 name = "ore-cli"
 version = "0.1.5"
 dependencies = [
@@ -2691,21 +2658,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ore-mint-api"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "2f589eedc80280ba56a9962d12c398529ae2121ebfc78a4acbc546b3a8c68386"
-dependencies = [
- "bytemuck",
- "num_enum",
- "serde",
- "solana-program",
- "spl-associated-token-account",
- "spl-token 4.0.2",
- "steel",
-]
-
-[[package]]
 name = "ore-stake-api"
 version = "0.1.5"
 dependencies = [
@@ -2716,7 +2668,6 @@ dependencies = [
  "solana-program",
  "spl-associated-token-account",
  "spl-token 4.0.2",
- "spl-token-2022 7.0.0",
  "steel",
  "thiserror 1.0.69",
 ]
@@ -2725,17 +2676,12 @@ dependencies = [
 name = "ore-stake-program"
 version = "0.1.5"
 dependencies = [
- "bincode",
- "ore-api",
  "ore-stake-api",
  "rand 0.8.5",
- "solana-nostd-keccak",
  "solana-program",
  "solana-security-txt",
  "spl-associated-token-account",
  "spl-token 4.0.2",
- "spl-token-2022 7.0.0",
- "spl-token-metadata-interface 0.6.0",
  "steel",
 ]
 
@@ -4271,15 +4217,6 @@ dependencies = [
  "solana-sdk",
  "tokio",
  "url",
-]
-
-[[package]]
-name = "solana-nostd-keccak"
-version = "0.1.3"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "d8ced70920435b1baa58f76e6f84bbc1110ddd1d6161ec76b6d731ae8431e9c4"
-dependencies = [
- "sha3",
 ]
 
 [[package]]

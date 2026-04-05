@@ -6,6 +6,9 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     // Parse data.
     let args = Distribute::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
+    if amount == 0 {
+        return Err(OreStakeError::AmountZero.into());
+    }
 
     // Load accounts.
     let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, token_program] =

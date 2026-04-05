@@ -9,6 +9,9 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     let args = Deposit::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
     let compound_fee = u64::from_le_bytes(args.compound_fee);
+    if amount == 0 {
+        return Err(OreStakeError::AmountZero.into());
+    }
 
     // Load accounts.
     let clock = Clock::get()?;

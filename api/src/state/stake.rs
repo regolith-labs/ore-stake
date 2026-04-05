@@ -77,9 +77,6 @@ impl Stake {
         // Accumulate rewards, weighted by stake balance.
         if treasury.rewards_factor > self.rewards_factor {
             let accumulated_rewards = treasury.rewards_factor - self.rewards_factor;
-            if accumulated_rewards < Numeric::ZERO {
-                panic!("Accumulated rewards is negative");
-            }
             let personal_rewards = accumulated_rewards * Numeric::from_u64(self.balance);
             self.rewards += personal_rewards.to_u64();
             self.lifetime_rewards += personal_rewards.to_u64();
