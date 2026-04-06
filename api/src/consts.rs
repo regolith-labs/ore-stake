@@ -13,6 +13,9 @@ pub const ONE_MINUTE: i64 = 60;
 /// The duration of one hour, in seconds.
 pub const ONE_HOUR: i64 = 60 * ONE_MINUTE;
 
+/// The duration of three hours, in seconds.
+pub const THREE_HOURS: i64 = 3 * ONE_HOUR;
+
 /// The duration of one day, in seconds.
 pub const ONE_DAY: i64 = 24 * ONE_HOUR;
 

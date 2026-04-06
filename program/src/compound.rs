@@ -1,6 +1,5 @@
 use ore_stake_api::prelude::*;
-use solana_program::log::sol_log;
-use spl_token::amount_to_ui_amount;
+use solana_program::rent::Rent;
 use steel::*;
 
 /// Compounds yield from the staking contract.
@@ -16,6 +15,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     let stake = stake_info
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
+        .assert_mut(|s| s.compound_fee > 0)?
         .assert_mut(|s| s.compound_fee_reserve >= s.compound_fee)?
         .assert_mut(|s| s.last_claim_at + ONE_DAY < clock.unix_timestamp)?;
     stake_tokens_info
@@ -44,18 +44,27 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
         &[TREASURY],
     )?;
 
+    // Check for rent exemption.
+    let minimum_rent = Rent::get()?.minimum_balance(stake_info.data_len());
+    if stake_info.lamports() - stake.compound_fee < minimum_rent {
+        return Err(ProgramError::InsufficientFunds);
+    }
+
     // Deduct compound fee from stake account.
     stake.compound_fee_reserve -= stake.compound_fee;
     stake_info.send(stake.compound_fee, &signer_info);
 
-    // Log compound.
-    sol_log(
-        &format!(
-            "Compounding {} ORE",
-            amount_to_ui_amount(amount, TOKEN_DECIMALS)
-        )
-        .as_str(),
-    );
+    // Log event.
+    program_log(
+        &[treasury_info.clone()],
+        CompoundEvent {
+            disc: 4,
+            authority: stake.authority,
+            amount,
+            ts: clock.unix_timestamp,
+        }
+        .to_bytes(),
+    )?;
 
     Ok(())
 }

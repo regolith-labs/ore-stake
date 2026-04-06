@@ -22,7 +22,8 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
     recipient_info.is_writable()?;
     let stake = stake_info
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
-        .assert_mut(|s| s.authority == *signer_info.key)?;
+        .assert_mut(|s| s.authority == *signer_info.key)?
+        .assert_mut(|s| s.last_deposit_at + ONE_DAY < clock.unix_timestamp)?;
     let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
     treasury_tokens_info
         .is_writable()?

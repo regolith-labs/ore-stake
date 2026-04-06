@@ -6,6 +6,7 @@ pub enum OreStakeEvent {
     Deposit = 1,
     Distribute = 2,
     Withdraw = 3,
+    Compound = 4,
 }
 
 #[repr(C)]
@@ -72,7 +73,24 @@ pub struct WithdrawEvent {
     pub ts: i64,
 }
 
+#[repr(C)]
+#[derive(Clone, Copy, Debug, Default, PartialEq, Pod, Zeroable, Serialize, Deserialize)]
+pub struct CompoundEvent {
+    /// The event discriminator.
+    pub disc: u64,
+
+    /// The authority of the stake account being compounded.
+    pub authority: Pubkey,
+
+    /// The amount of ORE compounded.
+    pub amount: u64,
+
+    /// The timestamp of the event.
+    pub ts: i64,
+}
+
 event!(ClaimEvent);
+event!(CompoundEvent);
 event!(DepositEvent);
 event!(DistributeEvent);
 event!(WithdrawEvent);

@@ -44,7 +44,7 @@ pub fn deposit(
         accounts: vec![
             AccountMeta::new(signer, true),
             AccountMeta::new(payer, true),
-            AccountMeta::new(mint_address, false),
+            AccountMeta::new_readonly(mint_address, false),
             AccountMeta::new(sender_address, false),
             AccountMeta::new(stake_address, false),
             AccountMeta::new(stake_tokens_address, false),
@@ -72,7 +72,7 @@ pub fn withdraw(signer: Pubkey, amount: u64) -> Instruction {
         program_id: crate::ID,
         accounts: vec![
             AccountMeta::new(signer, true),
-            AccountMeta::new(mint_address, false),
+            AccountMeta::new_readonly(mint_address, false),
             AccountMeta::new(recipient_address, false),
             AccountMeta::new(stake_address, false),
             AccountMeta::new(stake_tokens_address, false),
@@ -98,7 +98,7 @@ pub fn claim(signer: Pubkey, amount: u64) -> Instruction {
         program_id: crate::ID,
         accounts: vec![
             AccountMeta::new(signer, true),
-            AccountMeta::new(mint_address, false),
+            AccountMeta::new_readonly(mint_address, false),
             AccountMeta::new(recipient_address, false),
             AccountMeta::new(stake_address, false),
             AccountMeta::new(treasury_address, false),
@@ -124,7 +124,7 @@ pub fn compound(signer: Pubkey) -> Instruction {
         program_id: crate::ID,
         accounts: vec![
             AccountMeta::new(signer, true),
-            AccountMeta::new(mint_address, false),
+            AccountMeta::new_readonly(mint_address, false),
             AccountMeta::new(stake_address, false),
             AccountMeta::new(stake_tokens_address, false),
             AccountMeta::new(treasury_address, false),
@@ -144,7 +144,7 @@ pub fn init(signer: Pubkey) -> Instruction {
         program_id: crate::ID,
         accounts: vec![
             AccountMeta::new(signer, true),
-            AccountMeta::new(mint_address, false),
+            AccountMeta::new_readonly(mint_address, false),
             AccountMeta::new(treasury_address, false),
             AccountMeta::new(treasury_tokens_info, false),
             AccountMeta::new_readonly(system_program::ID, false),
@@ -165,7 +165,7 @@ pub fn distribute(signer: Pubkey, amount: u64) -> Instruction {
         accounts: vec![
             AccountMeta::new(signer, true),
             AccountMeta::new(sender_address, false),
-            AccountMeta::new(ore_mint_info, false),
+            AccountMeta::new_readonly(ore_mint_info, false),
             AccountMeta::new(treasury_info, false),
             AccountMeta::new(treasury_tokens_info, false),
             AccountMeta::new_readonly(spl_token::ID, false),
