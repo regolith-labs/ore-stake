@@ -14,7 +14,10 @@ pub struct Stake {
     /// The balance of this stake account.
     pub balance: u64,
 
-    /// The lamport reserve to pay fees for auto-compounding bots.
+    /// The lamport fee to pay for auto-compounding bots.
+    pub compound_fee: u64,
+
+    /// The lamport reserve to pay auto-compounding fees.
     pub compound_fee_reserve: u64,
 
     /// The timestamp of last claim.

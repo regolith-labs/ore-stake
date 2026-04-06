@@ -1,6 +1,4 @@
 use ore_stake_api::prelude::*;
-use solana_program::log::sol_log;
-use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Claims yield from the staking contract.
@@ -61,14 +59,17 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
         &[TREASURY],
     )?;
 
-    // Log claim.
-    sol_log(
-        &format!(
-            "Claiming {} ORE",
-            amount_to_ui_amount(amount, TOKEN_DECIMALS)
-        )
-        .as_str(),
-    );
+    // Log event.
+    program_log(
+        &[treasury_info.clone()],
+        ClaimEvent {
+            disc: 0,
+            authority: *signer_info.key,
+            amount,
+            ts: clock.unix_timestamp,
+        }
+        .to_bytes(),
+    )?;
 
     Ok(())
 }

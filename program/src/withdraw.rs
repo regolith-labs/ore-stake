@@ -1,6 +1,4 @@
 use ore_stake_api::prelude::*;
-use solana_program::log::sol_log;
-use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Withdraws ORE from the staking contract.
@@ -59,19 +57,24 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
         &[STAKE, &stake.authority.to_bytes()],
     )?;
 
-    // Log withdraw.
-    sol_log(
-        &format!(
-            "Withdrawing {} ORE",
-            amount_to_ui_amount(amount, TOKEN_DECIMALS)
-        )
-        .as_str(),
-    );
-
     // Safety check.
     let stake_tokens =
         stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
-    assert!(stake_tokens.amount() >= stake.balance);
+    if stake_tokens.amount() < stake.balance {
+        return Err(OreStakeError::InsufficientBalance.into());
+    }
+
+    // Log event.
+    program_log(
+        &[treasury_info.clone()],
+        WithdrawEvent {
+            disc: 3,
+            authority: *signer_info.key,
+            amount,
+            ts: clock.unix_timestamp,
+        }
+        .to_bytes(),
+    )?;
 
     Ok(())
 }

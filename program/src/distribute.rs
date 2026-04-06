@@ -11,6 +11,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     }
 
     // Load accounts.
+    let clock = Clock::get()?;
     let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, token_program] =
         accounts
     else {
@@ -28,7 +29,8 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     token_program.is_program(&spl_token::ID)?;
 
     // Update rewards factor.
-    treasury.rewards_factor += Numeric::from_fraction(amount, treasury.total_staked);
+    let total_staked = treasury.total_staked;
+    treasury.rewards_factor += Numeric::from_fraction(amount, total_staked);
 
     // Transfer tokens to treasury for distribution to stakers
     transfer(
@@ -37,6 +39,18 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         treasury_tokens_info,
         token_program,
         amount,
+    )?;
+
+    // Log event.
+    program_log(
+        &[treasury_info.clone()],
+        DistributeEvent {
+            disc: 2,
+            amount,
+            total_staked,
+            ts: clock.unix_timestamp,
+        }
+        .to_bytes(),
     )?;
 
     Ok(())

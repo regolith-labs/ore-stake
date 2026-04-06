@@ -8,6 +8,9 @@ pub enum OreStakeError {
 
     #[error("No deposits")]
     NoDeposits = 1,
+
+    #[error("Insufficient balance")]
+    InsufficientBalance = 2,
 }
 
 error!(OreStakeError);

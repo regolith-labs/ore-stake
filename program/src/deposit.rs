@@ -1,6 +1,4 @@
 use ore_stake_api::prelude::*;
-use solana_program::log::sol_log;
-use spl_token::amount_to_ui_amount;
 use steel::*;
 
 /// Deposits ORE into the staking contract.
@@ -85,15 +83,6 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         amount,
     )?;
 
-    // Log deposit.
-    sol_log(
-        &format!(
-            "Depositing {} ORE",
-            amount_to_ui_amount(amount, TOKEN_DECIMALS)
-        )
-        .as_str(),
-    );
-
     // Transfer SOL to the stake account for compound fee.
     stake.compound_fee_reserve += compound_fee;
     stake_info.collect(compound_fee, &payer_info)?;
@@ -101,7 +90,21 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     // Safety check.
     let stake_tokens =
         stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
-    assert!(stake_tokens.amount() >= stake.balance);
+    if stake_tokens.amount() < stake.balance {
+        return Err(OreStakeError::InsufficientBalance.into());
+    }
+
+    // Log event.
+    program_log(
+        &[treasury_info.clone()],
+        DepositEvent {
+            disc: 1,
+            authority: *signer_info.key,
+            amount,
+            ts: clock.unix_timestamp,
+        }
+        .to_bytes(),
+    )?;
 
     Ok(())
 }
