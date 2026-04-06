@@ -75,7 +75,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     // Deposit into stake account.
     let amount = stake.deposit(amount, &clock, treasury, &sender);
 
-    // Transfer ORE to treasury.
+    // Transfer ORE to stake token account.
     transfer(
         signer_info,
         sender_info,

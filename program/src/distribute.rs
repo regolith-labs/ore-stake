@@ -1,7 +1,7 @@
 use ore_stake_api::prelude::*;
 use steel::*;
 
-/// Distributes ORE from the treasury to the sender.
+/// Distributes ORE from the sender to the treasury for distribution to stakers.
 pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult {
     // Parse data.
     let args = Distribute::try_from_bytes(data)?;

@@ -8,7 +8,7 @@ use super::OreAccount;
 #[repr(C)]
 #[derive(Clone, Copy, Debug, PartialEq, Pod, Zeroable, Serialize, Deserialize)]
 pub struct Stake {
-    /// The authority of this miner account.
+    /// The authority of this staker account.
     pub authority: Pubkey,
 
     /// The balance of this stake account.
