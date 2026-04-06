@@ -19,14 +19,8 @@ pub const ONE_DAY: i64 = 24 * ONE_HOUR;
 /// The seed of the stake account PDA.
 pub const STAKE: &[u8] = b"stake";
 
-/// The seed of the round account PDA.
-pub const ROUND: &[u8] = b"round";
-
 /// The seed of the treasury account PDA.
 pub const TREASURY: &[u8] = b"treasury";
 
 /// The address of the mint account.
 pub const MINT_ADDRESS: Pubkey = pubkey!("oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp");
-
-/// Amount paid to bots per transaction for auto-compounding staking yield, in lamports.
-pub const COMPOUND_FEE_PER_TRANSACTION: u64 = 7_000;

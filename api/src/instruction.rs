@@ -25,6 +25,7 @@ pub struct Log {}
 pub struct Deposit {
     pub amount: [u8; 8],
     pub compound_fee: [u8; 8],
+    pub compound_fee_deposit: [u8; 8],
 }
 
 #[repr(C)]

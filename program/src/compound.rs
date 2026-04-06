@@ -16,7 +16,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     let stake = stake_info
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
-        .assert_mut(|s| s.compound_fee_reserve >= COMPOUND_FEE_PER_TRANSACTION)?
+        .assert_mut(|s| s.compound_fee_reserve >= s.compound_fee)?
         .assert_mut(|s| s.last_claim_at + ONE_DAY < clock.unix_timestamp)?;
     stake_tokens_info
         .is_writable()?
@@ -45,8 +45,8 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     )?;
 
     // Deduct compound fee from stake account.
-    stake.compound_fee_reserve -= COMPOUND_FEE_PER_TRANSACTION;
-    stake_info.send(COMPOUND_FEE_PER_TRANSACTION, &signer_info);
+    stake.compound_fee_reserve -= stake.compound_fee;
+    stake_info.send(stake.compound_fee, &signer_info);
 
     // Log compound.
     sol_log(

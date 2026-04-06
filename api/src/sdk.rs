@@ -27,7 +27,13 @@ pub fn program_log(accounts: &[AccountInfo], msg: &[u8]) -> Result<(), ProgramEr
     )
 }
 
-pub fn deposit(signer: Pubkey, payer: Pubkey, amount: u64, compound_fee: u64) -> Instruction {
+pub fn deposit(
+    signer: Pubkey,
+    payer: Pubkey,
+    amount: u64,
+    compound_fee: u64,
+    compound_fee_deposit: u64,
+) -> Instruction {
     let mint_address = MINT_ADDRESS;
     let stake_address = stake_pda(signer).0;
     let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);
@@ -50,6 +56,7 @@ pub fn deposit(signer: Pubkey, payer: Pubkey, amount: u64, compound_fee: u64) ->
         data: Deposit {
             amount: amount.to_le_bytes(),
             compound_fee: compound_fee.to_le_bytes(),
+            compound_fee_deposit: compound_fee_deposit.to_le_bytes(),
         }
         .to_bytes(),
     }

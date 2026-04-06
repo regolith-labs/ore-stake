@@ -7,6 +7,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     let args = Deposit::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
     let compound_fee = u64::from_le_bytes(args.compound_fee);
+    let compound_fee_deposit = u64::from_le_bytes(args.compound_fee_deposit);
     if amount == 0 {
         return Err(OreStakeError::AmountZero.into());
     }
@@ -84,8 +85,9 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     )?;
 
     // Transfer SOL to the stake account for compound fee.
-    stake.compound_fee_reserve += compound_fee;
-    stake_info.collect(compound_fee, &payer_info)?;
+    stake.compound_fee = compound_fee;
+    stake.compound_fee_reserve += compound_fee_deposit;
+    stake_info.collect(compound_fee_deposit, &payer_info)?;
 
     // Safety check.
     let stake_tokens =
