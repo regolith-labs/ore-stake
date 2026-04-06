@@ -52,6 +52,7 @@ pub fn deposit(
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
+            AccountMeta::new_readonly(crate::ID, false),
         ],
         data: Deposit {
             amount: amount.to_le_bytes(),
@@ -80,6 +81,7 @@ pub fn withdraw(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
+            AccountMeta::new_readonly(crate::ID, false),
         ],
         data: Withdraw {
             amount: amount.to_le_bytes(),
@@ -106,6 +108,7 @@ pub fn claim(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
+            AccountMeta::new_readonly(crate::ID, false),
         ],
         data: Claim {
             amount: amount.to_le_bytes(),
@@ -131,6 +134,7 @@ pub fn compound(signer: Pubkey) -> Instruction {
             AccountMeta::new(treasury_tokens_address, false),
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
+            AccountMeta::new_readonly(crate::ID, false),
         ],
         data: Compound {}.to_bytes(),
     }
@@ -169,6 +173,7 @@ pub fn distribute(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new(treasury_info, false),
             AccountMeta::new(treasury_tokens_info, false),
             AccountMeta::new_readonly(spl_token::ID, false),
+            AccountMeta::new_readonly(crate::ID, false),
         ],
         data: Distribute {
             amount: amount.to_le_bytes(),

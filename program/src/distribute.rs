@@ -12,7 +12,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     // Load accounts.
     let clock = Clock::get()?;
-    let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, token_program] =
+    let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, token_program, ore_stake_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
@@ -27,6 +27,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         .assert_mut_err(|t| t.total_staked > 0, OreStakeError::NoDeposits.into())?;
     treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
     token_program.is_program(&spl_token::ID)?;
+    ore_stake_program.is_program(&ore_stake_api::ID)?;
 
     // Update rewards factor.
     let total_staked = treasury.total_staked;
