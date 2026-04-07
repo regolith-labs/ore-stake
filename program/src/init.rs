@@ -25,6 +25,9 @@ pub fn process_init(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult
         &ore_stake_api::ID,
         &[TREASURY],
     )?;
+    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    treasury.rewards_factor = Numeric::ZERO;
+    treasury.total_staked = 0;
 
     // Create treasury tokens account.
     create_associated_token_account(

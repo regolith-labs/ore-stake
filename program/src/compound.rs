@@ -32,6 +32,11 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     // Claim yield from stake account.
     let amount = stake.claim(u64::MAX, &clock, treasury);
 
+    // If no yield to compound, return.
+    if amount == 0 {
+        return Ok(());
+    }
+
     // Deposit into stake account.
     let amount = stake.deposit(amount, &clock, treasury, &treasury_tokens);
 
