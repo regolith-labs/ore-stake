@@ -27,7 +27,9 @@ impl Treasury {
             ((vesting.initial_amount as u128 * time_elapsed as u128) / ONE_HOUR as u128) as u64,
         );
         let amount = vested_amount - vesting.vested_amount;
-        self.rewards_factor += Numeric::from_fraction(amount, self.total_staked);
+        if self.total_staked > 0 {
+            self.rewards_factor += Numeric::from_fraction(amount, self.total_staked);
+        }
         vesting.vested_amount = vested_amount;
         amount
     }

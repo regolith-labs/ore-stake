@@ -33,15 +33,20 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     // Vest any unvested ORE into the treasury.
     treasury.vest(&clock, vesting);
 
-    // If less than 20% of the vesting period remains, reset the vesting schedule.
-    if clock.unix_timestamp - vesting.start_time > ONE_HOUR * 4 / 5 {
-        let remaining_amount = vesting.initial_amount - vesting.vested_amount;
-        vesting.initial_amount = amount + remaining_amount;
-        vesting.start_time = clock.unix_timestamp;
+    // Update vesting schedule.
+    if vesting.vested_amount >= vesting.initial_amount {
+        // Previous schedule complete — start fresh.
+        vesting.initial_amount = amount;
         vesting.vested_amount = 0;
+        vesting.start_time = clock.unix_timestamp;
     } else {
-        // Otherwise, add the new amount to the existing vesting schedule.
-        vesting.initial_amount += amount;
+        // Adjust start_time to preserve vested_amount invariant under new total.
+        let new_initial = vesting.initial_amount + amount;
+        let new_elapsed = (vesting.vested_amount as u128)
+            .saturating_mul(ONE_HOUR as u128)
+            .div_ceil(new_initial as u128) as i64;
+        vesting.start_time = clock.unix_timestamp - new_elapsed;
+        vesting.initial_amount = new_initial;
     }
 
     // Transfer tokens to treasury for distribution to stakers
