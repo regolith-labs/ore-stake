@@ -6,7 +6,7 @@ use steel::*;
 pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
     // Load accounts.
     let clock = Clock::get()?;
-    let [signer_info, mint_info, stake_info, stake_tokens_info, treasury_info, treasury_tokens_info, system_program, token_program, ore_stake_program] =
+    let [signer_info, mint_info, stake_info, stake_tokens_info, treasury_info, treasury_tokens_info, vesting_info, system_program, token_program, ore_stake_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
@@ -25,12 +25,13 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     let treasury_tokens = treasury_tokens_info
         .is_writable()?
         .as_associated_token_account(&treasury_info.key, &mint_info.key)?;
+    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     ore_stake_program.is_program(&ore_stake_api::ID)?;
 
     // Claim yield from stake account.
-    let amount = stake.claim(u64::MAX, &clock, treasury);
+    let amount = stake.claim(u64::MAX, &clock, treasury, vesting);
 
     // If no yield to compound, return.
     if amount == 0 {
@@ -38,7 +39,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     }
 
     // Deposit into stake account.
-    let amount = stake.deposit(amount, &clock, treasury, &treasury_tokens);
+    let amount = stake.deposit(amount, &clock, treasury, &treasury_tokens, vesting);
 
     // Transfer ORE rewards from treasury to stake deposits.
     transfer_signed(

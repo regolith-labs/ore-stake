@@ -39,6 +39,7 @@ pub fn deposit(
     let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);
     let sender_address = get_associated_token_address(&signer, &MINT_ADDRESS);
     let treasury_address = treasury_pda().0;
+    let vesting_info = vesting_pda().0;
     Instruction {
         program_id: crate::ID,
         accounts: vec![
@@ -49,6 +50,7 @@ pub fn deposit(
             AccountMeta::new(stake_address, false),
             AccountMeta::new(stake_tokens_address, false),
             AccountMeta::new(treasury_address, false),
+            AccountMeta::new(vesting_info, false),
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
@@ -69,6 +71,7 @@ pub fn withdraw(signer: Pubkey, amount: u64) -> Instruction {
     let mint_address = MINT_ADDRESS;
     let recipient_address = get_associated_token_address(&signer, &MINT_ADDRESS);
     let treasury_address = treasury_pda().0;
+    let vesting_info = vesting_pda().0;
     Instruction {
         program_id: crate::ID,
         accounts: vec![
@@ -78,6 +81,7 @@ pub fn withdraw(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new(stake_address, false),
             AccountMeta::new(stake_tokens_address, false),
             AccountMeta::new(treasury_address, false),
+            AccountMeta::new(vesting_info, false),
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
@@ -96,6 +100,7 @@ pub fn claim(signer: Pubkey, amount: u64) -> Instruction {
     let recipient_address = get_associated_token_address(&signer, &MINT_ADDRESS);
     let treasury_address = treasury_pda().0;
     let treasury_tokens_address = treasury_tokens_address();
+    let vesting_info = vesting_pda().0;
     Instruction {
         program_id: crate::ID,
         accounts: vec![
@@ -105,6 +110,7 @@ pub fn claim(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new(stake_address, false),
             AccountMeta::new(treasury_address, false),
             AccountMeta::new(treasury_tokens_address, false),
+            AccountMeta::new(vesting_info, false),
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
@@ -123,6 +129,7 @@ pub fn compound(signer: Pubkey) -> Instruction {
     let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);
     let treasury_address = treasury_pda().0;
     let treasury_tokens_address = treasury_tokens_address();
+    let vesting_info = vesting_pda().0;
     Instruction {
         program_id: crate::ID,
         accounts: vec![
@@ -132,6 +139,7 @@ pub fn compound(signer: Pubkey) -> Instruction {
             AccountMeta::new(stake_tokens_address, false),
             AccountMeta::new(treasury_address, false),
             AccountMeta::new(treasury_tokens_address, false),
+            AccountMeta::new(vesting_info, false),
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(crate::ID, false),
@@ -144,6 +152,7 @@ pub fn init(signer: Pubkey) -> Instruction {
     let mint_address = MINT_ADDRESS;
     let treasury_address = treasury_pda().0;
     let treasury_tokens_info = treasury_tokens_address();
+    let vesting_info = vesting_pda().0;
     Instruction {
         program_id: crate::ID,
         accounts: vec![
@@ -151,6 +160,7 @@ pub fn init(signer: Pubkey) -> Instruction {
             AccountMeta::new_readonly(mint_address, false),
             AccountMeta::new(treasury_address, false),
             AccountMeta::new(treasury_tokens_info, false),
+            AccountMeta::new(vesting_info, false),
             AccountMeta::new_readonly(system_program::ID, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(spl_associated_token_account::ID, false),
@@ -163,6 +173,7 @@ pub fn distribute(signer: Pubkey, amount: u64) -> Instruction {
     let sender_address = get_associated_token_address(&signer, &MINT_ADDRESS);
     let ore_mint_info = MINT_ADDRESS;
     let treasury_info = treasury_pda().0;
+    let vesting_info = vesting_pda().0;
     let treasury_tokens_info = treasury_tokens_address();
     Instruction {
         program_id: crate::ID,
@@ -172,6 +183,7 @@ pub fn distribute(signer: Pubkey, amount: u64) -> Instruction {
             AccountMeta::new_readonly(ore_mint_info, false),
             AccountMeta::new(treasury_info, false),
             AccountMeta::new(treasury_tokens_info, false),
+            AccountMeta::new(vesting_info, false),
             AccountMeta::new_readonly(spl_token::ID, false),
             AccountMeta::new_readonly(crate::ID, false),
         ],

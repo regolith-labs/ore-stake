@@ -12,7 +12,7 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
 
     // Load accounts.
     let clock = Clock::get()?;
-    let [signer_info, mint_info, recipient_info, stake_info, treasury_info, treasury_tokens_info, system_program, token_program, associated_token_program, ore_stake_program] =
+    let [signer_info, mint_info, recipient_info, stake_info, treasury_info, treasury_tokens_info, vesting_info, system_program, token_program, associated_token_program, ore_stake_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
@@ -28,6 +28,7 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
     treasury_tokens_info
         .is_writable()?
         .as_associated_token_account(&treasury_info.key, &mint_info.key)?;
+    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
@@ -49,7 +50,7 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
     }
 
     // Claim yield from stake account.
-    let amount = stake.claim(amount, &clock, treasury);
+    let amount = stake.claim(amount, &clock, treasury, vesting);
 
     // Transfer ORE to recipient.
     transfer_signed(

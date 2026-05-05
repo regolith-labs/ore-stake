@@ -1,7 +1,7 @@
 use serde::{Deserialize, Serialize};
 use steel::*;
 
-use crate::state::{stake_pda, Treasury};
+use crate::state::{stake_pda, Treasury, Vesting};
 
 use super::OreAccount;
 
@@ -44,8 +44,14 @@ impl Stake {
         stake_pda(self.authority)
     }
 
-    pub fn claim(&mut self, amount: u64, clock: &Clock, treasury: &Treasury) -> u64 {
-        self.update_rewards(treasury);
+    pub fn claim(
+        &mut self,
+        amount: u64,
+        clock: &Clock,
+        treasury: &mut Treasury,
+        vesting: &mut Vesting,
+    ) -> u64 {
+        self.update_rewards(clock, treasury, vesting);
         let amount = self.rewards.min(amount);
         self.rewards -= amount;
         self.last_claim_at = clock.unix_timestamp;
@@ -58,8 +64,9 @@ impl Stake {
         clock: &Clock,
         treasury: &mut Treasury,
         sender: &TokenAccount,
+        vesting: &mut Vesting,
     ) -> u64 {
-        self.update_rewards(treasury);
+        self.update_rewards(clock, treasury, vesting);
         let amount = sender.amount().min(amount);
         self.balance += amount;
         self.last_deposit_at = clock.unix_timestamp;
@@ -67,8 +74,14 @@ impl Stake {
         amount
     }
 
-    pub fn withdraw(&mut self, amount: u64, clock: &Clock, treasury: &mut Treasury) -> u64 {
-        self.update_rewards(treasury);
+    pub fn withdraw(
+        &mut self,
+        amount: u64,
+        clock: &Clock,
+        treasury: &mut Treasury,
+        vesting: &mut Vesting,
+    ) -> u64 {
+        self.update_rewards(clock, treasury, vesting);
         let amount = self.balance.min(amount);
         self.balance -= amount;
         self.last_withdraw_at = clock.unix_timestamp;
@@ -76,7 +89,15 @@ impl Stake {
         amount
     }
 
-    pub fn update_rewards(&mut self, treasury: &Treasury) {
+    pub fn update_rewards(
+        &mut self,
+        clock: &Clock,
+        treasury: &mut Treasury,
+        vesting: &mut Vesting,
+    ) {
+        // Vest any unvested ORE into the treasury.
+        treasury.vest(&clock, vesting);
+
         // Accumulate rewards, weighted by stake balance.
         if treasury.rewards_factor > self.rewards_factor {
             let accumulated_rewards = treasury.rewards_factor - self.rewards_factor;

@@ -19,7 +19,7 @@ use solana_sdk::{
 };
 use spl_associated_token_account::get_associated_token_address;
 use spl_token::amount_to_ui_amount;
-use steel::{AccountDeserialize, Discriminator, Instruction};
+use steel::{AccountDeserialize, Clock, Discriminator, Instruction};
 
 #[tokio::main]
 async fn main() {
@@ -51,11 +51,13 @@ async fn main() {
 
 async fn validate(rpc: &RpcClient) -> Result<(), anyhow::Error> {
     let stakes = get_stakes(rpc).await?;
-    let treasury = get_treasury(rpc).await?;
+    let clock = get_clock(rpc).await?;
+    let mut treasury = get_treasury(rpc).await?;
+    let mut vesting = get_vesting(rpc).await?;
     let mut total_rewards = 0;
     let mut total_deposits = 0;
     for (i, (address, mut stake)) in stakes.iter().enumerate() {
-        stake.update_rewards(&treasury);
+        stake.update_rewards(&clock, &mut treasury, &mut vesting);
         let ata = get_associated_token_address(&address, &MINT_ADDRESS);
         let balance = rpc.get_token_account_balance(&ata).await?;
         assert!(balance.amount.parse::<u64>().unwrap() >= stake.balance);
@@ -97,10 +99,12 @@ async fn log_stake(
 ) -> Result<(), anyhow::Error> {
     let authority = std::env::var("AUTHORITY").unwrap_or(payer.pubkey().to_string());
     let authority = Pubkey::from_str(&authority).expect("Invalid AUTHORITY");
-    let treasury = get_treasury(&rpc).await?;
+    let mut treasury = get_treasury(&rpc).await?;
+    let clock = get_clock(rpc).await?;
+    let mut vesting = get_vesting(rpc).await?;
     let staker_address = ore_stake_api::state::stake_pda(authority).0;
     let mut stake = get_stake(rpc, authority).await?;
-    stake.update_rewards(&treasury);
+    stake.update_rewards(&clock, &mut treasury, &mut vesting);
     println!("Stake");
     println!("  address: {}", staker_address);
     println!("  authority: {}", authority);
@@ -154,6 +158,12 @@ async fn get_stakes(rpc: &RpcClient) -> Result<Vec<(Pubkey, Stake)>, anyhow::Err
     Ok(stakes)
 }
 
+async fn get_clock(rpc: &RpcClient) -> Result<Clock, anyhow::Error> {
+    let data = rpc.get_account_data(&solana_sdk::sysvar::clock::ID).await?;
+    let clock = bincode::deserialize::<Clock>(&data)?;
+    Ok(clock)
+}
+
 async fn get_treasury(rpc: &RpcClient) -> Result<Treasury, anyhow::Error> {
     let treasury_pda = ore_stake_api::state::treasury_pda();
     let account = rpc.get_account(&treasury_pda.0).await?;
@@ -166,6 +176,13 @@ async fn get_stake(rpc: &RpcClient, authority: Pubkey) -> Result<Stake, anyhow::
     let account = rpc.get_account(&stake_pda.0).await?;
     let stake = Stake::try_from_bytes(&account.data)?;
     Ok(*stake)
+}
+
+async fn get_vesting(rpc: &RpcClient) -> Result<Vesting, anyhow::Error> {
+    let vesting_pda = ore_stake_api::state::vesting_pda();
+    let account = rpc.get_account(&vesting_pda.0).await?;
+    let vesting = Vesting::try_from_bytes(&account.data)?;
+    Ok(*vesting)
 }
 
 #[allow(dead_code)]

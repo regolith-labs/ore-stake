@@ -12,7 +12,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
 
     // Load accounts.
     let clock = Clock::get()?;
-    let [signer_info, mint_info, recipient_info, stake_info, stake_tokens_info, treasury_info, system_program, token_program, associated_token_program, ore_stake_program] =
+    let [signer_info, mint_info, recipient_info, stake_info, stake_tokens_info, treasury_info, vesting_info, system_program, token_program, associated_token_program, ore_stake_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
@@ -26,6 +26,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     // .assert_mut(|s| s.last_deposit_at + ONE_DAY < clock.unix_timestamp)?;
     stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
     let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
@@ -47,7 +48,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     }
 
     // Withdraw from stake account.
-    let amount = stake.withdraw(amount, &clock, treasury);
+    let amount = stake.withdraw(amount, &clock, treasury, vesting);
 
     // Transfer ORE to recipient.
     transfer_signed(

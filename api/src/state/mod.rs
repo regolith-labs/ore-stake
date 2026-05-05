@@ -1,8 +1,10 @@
 mod stake;
 mod treasury;
+mod vesting;
 
 pub use stake::*;
 pub use treasury::*;
+pub use vesting::*;
 
 use crate::consts::*;
 
@@ -13,6 +15,7 @@ use steel::*;
 pub enum OreAccount {
     Treasury = 104,
     Stake = 108,
+    Vesting = 109,
 }
 
 pub fn stake_pda(authority: Pubkey) -> (Pubkey, u8) {
@@ -21,6 +24,10 @@ pub fn stake_pda(authority: Pubkey) -> (Pubkey, u8) {
 
 pub fn treasury_pda() -> (Pubkey, u8) {
     Pubkey::find_program_address(&[TREASURY], &crate::ID)
+}
+
+pub fn vesting_pda() -> (Pubkey, u8) {
+    Pubkey::find_program_address(&[VESTING], &crate::ID)
 }
 
 pub fn treasury_tokens_address() -> Pubkey {

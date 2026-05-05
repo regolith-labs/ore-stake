@@ -14,7 +14,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
 
     // Load accounts.
     let clock = Clock::get()?;
-    let [signer_info, payer_info, mint_info, sender_info, stake_info, stake_tokens_info, treasury_info, system_program, token_program, associated_token_program, ore_stake_program] =
+    let [signer_info, payer_info, mint_info, sender_info, stake_info, stake_tokens_info, treasury_info, vesting_info, system_program, token_program, associated_token_program, ore_stake_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
@@ -27,6 +27,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?;
     stake_info.is_writable()?;
     let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
@@ -74,7 +75,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     }
 
     // Deposit into stake account.
-    let amount = stake.deposit(amount, &clock, treasury, &sender);
+    let amount = stake.deposit(amount, &clock, treasury, &sender, vesting);
 
     // Transfer ORE to stake token account.
     transfer(

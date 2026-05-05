@@ -12,7 +12,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     // Load accounts.
     let clock = Clock::get()?;
-    let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, token_program, ore_stake_program] =
+    let [signer_info, sender_info, ore_mint_info, treasury_info, treasury_tokens_info, vesting_info, token_program, ore_stake_program] =
         accounts
     else {
         return Err(ProgramError::NotEnoughAccountKeys);
@@ -25,13 +25,24 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     let treasury = treasury_info
         .as_account_mut::<Treasury>(&ore_stake_api::ID)?
         .assert_mut_err(|t| t.total_staked > 0, OreStakeError::NoDeposits.into())?;
+    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
     token_program.is_program(&spl_token::ID)?;
     ore_stake_program.is_program(&ore_stake_api::ID)?;
 
-    // Update rewards factor.
-    let total_staked = treasury.total_staked;
-    treasury.rewards_factor += Numeric::from_fraction(amount, total_staked);
+    // Vest any unvested ORE into the treasury.
+    treasury.vest(&clock, vesting);
+
+    // If less than 20% of the vesting period remains, reset the vesting schedule.
+    if clock.unix_timestamp - vesting.start_time > ONE_HOUR * 4 / 5 {
+        let remaining_amount = vesting.initial_amount - vesting.total_vested;
+        vesting.initial_amount = amount + remaining_amount;
+        vesting.start_time = clock.unix_timestamp;
+        vesting.total_vested = 0;
+    } else {
+        // Otherwise, add the new amount to the existing vesting schedule.
+        vesting.initial_amount += amount;
+    }
 
     // Transfer tokens to treasury for distribution to stakers
     transfer(
@@ -48,7 +59,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         DistributeEvent {
             disc: 2,
             amount,
-            total_staked,
+            total_staked: treasury.total_staked,
             ts: clock.unix_timestamp,
         }
         .to_bytes(),
