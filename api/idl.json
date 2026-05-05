@@ -1,5 +1,5 @@
 {
-    "version": "0.1.5",
+    "version": "0.2.0",
     "name": "ore_stake",
     "instructions": [
         {
@@ -30,7 +30,8 @@
             },
             "docs": [
                 "Initializes the staking program.",
-                "Treasury PDA seeds: [\"treasury\"]."
+                "Treasury PDA seeds: [\"treasury\"].",
+                "Vesting PDA seeds: [\"vesting\"]."
             ],
             "accounts": [
                 {
@@ -51,6 +52,11 @@
                 },
                 {
                     "name": "treasuryTokens",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
+                    "name": "vesting",
                     "isMut": true,
                     "isSigner": false
                 },
@@ -83,7 +89,8 @@
             },
             "docs": [
                 "Distributes ORE from the sender to the treasury for distribution to stakers.",
-                "Treasury PDA seeds: [\"treasury\"]."
+                "Treasury PDA seeds: [\"treasury\"].",
+                "Vesting PDA seeds: [\"vesting\"]."
             ],
             "accounts": [
                 {
@@ -113,10 +120,21 @@
                     "isSigner": false
                 },
                 {
+                    "name": "vesting",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
                     "name": "tokenProgram",
                     "isMut": false,
                     "isSigner": false,
                     "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                    "name": "oreStakeProgram",
+                    "isMut": false,
+                    "isSigner": false,
+                    "address": "STkEAu2cEyQp5ktgUauRVq8es6mEP2w6ixw4NEd5tDJ"
                 }
             ],
             "args": [
@@ -134,7 +152,8 @@
             },
             "docs": [
                 "Deposits ORE into a staking account.",
-                "Stake PDA seeds: [\"stake\", signer]."
+                "Stake PDA seeds: [\"stake\", signer].",
+                "Vesting PDA seeds: [\"vesting\"]."
             ],
             "accounts": [
                 {
@@ -174,6 +193,11 @@
                     "isSigner": false
                 },
                 {
+                    "name": "vesting",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
                     "name": "systemProgram",
                     "isMut": false,
                     "isSigner": false,
@@ -190,6 +214,12 @@
                     "isMut": false,
                     "isSigner": false,
                     "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                    "name": "oreStakeProgram",
+                    "isMut": false,
+                    "isSigner": false,
+                    "address": "STkEAu2cEyQp5ktgUauRVq8es6mEP2w6ixw4NEd5tDJ"
                 }
             ],
             "args": [
@@ -215,7 +245,8 @@
             },
             "docs": [
                 "Withdraws ORE from a staking account.",
-                "Stake PDA seeds: [\"stake\", signer]."
+                "Stake PDA seeds: [\"stake\", signer].",
+                "Vesting PDA seeds: [\"vesting\"]."
             ],
             "accounts": [
                 {
@@ -250,6 +281,11 @@
                     "isSigner": false
                 },
                 {
+                    "name": "vesting",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
                     "name": "systemProgram",
                     "isMut": false,
                     "isSigner": false,
@@ -266,6 +302,12 @@
                     "isMut": false,
                     "isSigner": false,
                     "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                    "name": "oreStakeProgram",
+                    "isMut": false,
+                    "isSigner": false,
+                    "address": "STkEAu2cEyQp5ktgUauRVq8es6mEP2w6ixw4NEd5tDJ"
                 }
             ],
             "args": [
@@ -284,7 +326,8 @@
             "docs": [
                 "Claims accrued staking rewards.",
                 "Stake PDA seeds: [\"stake\", signer].",
-                "Treasury PDA seeds: [\"treasury\"]."
+                "Treasury PDA seeds: [\"treasury\"].",
+                "Vesting PDA seeds: [\"vesting\"]."
             ],
             "accounts": [
                 {
@@ -319,6 +362,11 @@
                     "isSigner": false
                 },
                 {
+                    "name": "vesting",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
                     "name": "systemProgram",
                     "isMut": false,
                     "isSigner": false,
@@ -335,6 +383,12 @@
                     "isMut": false,
                     "isSigner": false,
                     "address": "ATokenGPvbdGVxr1b2hvZbsiqW5xWH25efTNsLJA8knL"
+                },
+                {
+                    "name": "oreStakeProgram",
+                    "isMut": false,
+                    "isSigner": false,
+                    "address": "STkEAu2cEyQp5ktgUauRVq8es6mEP2w6ixw4NEd5tDJ"
                 }
             ],
             "args": [
@@ -354,7 +408,8 @@
                 "Compounds accrued staking rewards back into the stake deposit.",
                 "Can be called by anyone (bot-driven). Pays compound fee from the stake account's reserve.",
                 "Stake PDA seeds: [\"stake\", authority].",
-                "Treasury PDA seeds: [\"treasury\"]."
+                "Treasury PDA seeds: [\"treasury\"].",
+                "Vesting PDA seeds: [\"vesting\"]."
             ],
             "accounts": [
                 {
@@ -389,6 +444,11 @@
                     "isSigner": false
                 },
                 {
+                    "name": "vesting",
+                    "isMut": true,
+                    "isSigner": false
+                },
+                {
                     "name": "systemProgram",
                     "isMut": false,
                     "isSigner": false,
@@ -399,6 +459,12 @@
                     "isMut": false,
                     "isSigner": false,
                     "address": "TokenkegQfeZyiNwAJbNbGKPFXCWuBvf9Ss623VQ5DA"
+                },
+                {
+                    "name": "oreStakeProgram",
+                    "isMut": false,
+                    "isSigner": false,
+                    "address": "STkEAu2cEyQp5ktgUauRVq8es6mEP2w6ixw4NEd5tDJ"
                 }
             ],
             "args": []
@@ -556,6 +622,39 @@
                     }
                 ]
             }
+        },
+        {
+            "name": "Vesting",
+            "discriminator": [
+                109,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "docs": [
+                "Vesting account tracks reward vesting into the treasury."
+            ],
+            "type": {
+                "kind": "struct",
+                "fields": [
+                    {
+                        "name": "initial_amount",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "vested_amount",
+                        "type": "u64"
+                    },
+                    {
+                        "name": "start_time",
+                        "type": "i64"
+                    }
+                ]
+            }
         }
     ],
     "types": [
@@ -690,6 +789,41 @@
             "name": "WithdrawEvent",
             "discriminator": [
                 3,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0,
+                0
+            ],
+            "fields": [
+                {
+                    "name": "disc",
+                    "type": "u64",
+                    "index": false
+                },
+                {
+                    "name": "authority",
+                    "type": "publicKey",
+                    "index": false
+                },
+                {
+                    "name": "amount",
+                    "type": "u64",
+                    "index": false
+                },
+                {
+                    "name": "ts",
+                    "type": "i64",
+                    "index": false
+                }
+            ]
+        },
+        {
+            "name": "CompoundEvent",
+            "discriminator": [
+                4,
                 0,
                 0,
                 0,

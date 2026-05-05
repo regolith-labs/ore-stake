@@ -11,7 +11,7 @@ pub struct Vesting {
     pub initial_amount: u64,
 
     /// The total amount of ORE that has been vested into the treasury.
-    pub total_vested: u64,
+    pub vested_amount: u64,
 
     /// The timestamp of the first vesting.
     pub start_time: i64,

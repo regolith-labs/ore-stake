@@ -60,8 +60,8 @@ pub fn process_init(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult
         )?;
         let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
         vesting.initial_amount = 0;
+        vesting.vested_amount = 0;
         vesting.start_time = 0;
-        vesting.total_vested = 0;
     } else {
         vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     }

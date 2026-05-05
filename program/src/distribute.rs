@@ -35,10 +35,10 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
 
     // If less than 20% of the vesting period remains, reset the vesting schedule.
     if clock.unix_timestamp - vesting.start_time > ONE_HOUR * 4 / 5 {
-        let remaining_amount = vesting.initial_amount - vesting.total_vested;
+        let remaining_amount = vesting.initial_amount - vesting.vested_amount;
         vesting.initial_amount = amount + remaining_amount;
         vesting.start_time = clock.unix_timestamp;
-        vesting.total_vested = 0;
+        vesting.vested_amount = 0;
     } else {
         // Otherwise, add the new amount to the existing vesting schedule.
         vesting.initial_amount += amount;
