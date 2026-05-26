@@ -23,11 +23,15 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
     let stake = stake_info
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
         .assert_mut(|s| s.authority == *signer_info.key)?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let treasury = treasury_info
+        .has_address(&treasury_pda().0)?
+        .as_account_mut::<Treasury>(&ore_stake_api::ID)?;
     treasury_tokens_info
         .is_writable()?
         .as_associated_token_account(&treasury_info.key, &mint_info.key)?;
-    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
+    let vesting = vesting_info
+        .has_address(&vesting_pda().0)?
+        .as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;

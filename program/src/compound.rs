@@ -21,11 +21,15 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     stake_tokens_info
         .is_writable()?
         .as_associated_token_account(stake_info.key, mint_info.key)?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let treasury = treasury_info
+        .has_address(&treasury_pda().0)?
+        .as_account_mut::<Treasury>(&ore_stake_api::ID)?;
     let treasury_tokens = treasury_tokens_info
         .is_writable()?
         .as_associated_token_account(&treasury_info.key, &mint_info.key)?;
-    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
+    let vesting = vesting_info
+        .has_address(&vesting_pda().0)?
+        .as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     ore_stake_program.is_program(&ore_stake_api::ID)?;

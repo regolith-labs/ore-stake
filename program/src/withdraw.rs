@@ -24,8 +24,12 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
         .assert_mut(|s| s.authority == *signer_info.key)?;
     stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
-    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
+    let treasury = treasury_info
+        .has_address(&treasury_pda().0)?
+        .as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let vesting = vesting_info
+        .has_address(&vesting_pda().0)?
+        .as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;

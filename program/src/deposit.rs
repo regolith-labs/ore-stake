@@ -26,8 +26,12 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         .is_writable()?
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?;
     stake_info.is_writable()?;
-    let treasury = treasury_info.as_account_mut::<Treasury>(&ore_stake_api::ID)?;
-    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
+    let treasury = treasury_info
+        .has_address(&treasury_pda().0)?
+        .as_account_mut::<Treasury>(&ore_stake_api::ID)?;
+    let vesting = vesting_info
+        .has_address(&vesting_pda().0)?
+        .as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;

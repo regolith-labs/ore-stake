@@ -23,9 +23,12 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
         .assert(|s| s.amount() >= amount)?;
     ore_mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     let treasury = treasury_info
+        .has_address(&treasury_pda().0)?
         .as_account_mut::<Treasury>(&ore_stake_api::ID)?
         .assert_mut_err(|t| t.total_staked > 0, OreStakeError::NoDeposits.into())?;
-    let vesting = vesting_info.as_account_mut::<Vesting>(&ore_stake_api::ID)?;
+    let vesting = vesting_info
+        .has_address(&vesting_pda().0)?
+        .as_account_mut::<Vesting>(&ore_stake_api::ID)?;
     treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
     token_program.is_program(&spl_token::ID)?;
     ore_stake_program.is_program(&ore_stake_api::ID)?;
