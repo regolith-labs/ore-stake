@@ -96,7 +96,7 @@ impl Stake {
         vesting: &mut Vesting,
     ) {
         // Vest any unvested ORE into the treasury.
-        treasury.vest(&clock, vesting);
+        vesting.vest(&clock, treasury);
 
         // Accumulate rewards, weighted by stake balance.
         if treasury.rewards_factor > self.rewards_factor {

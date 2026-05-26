@@ -31,7 +31,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     ore_stake_program.is_program(&ore_stake_api::ID)?;
 
     // Vest any unvested ORE into the treasury.
-    treasury.vest(&clock, vesting);
+    vesting.vest(&clock, treasury);
 
     // Update vesting schedule.
     if vesting.vested_amount >= vesting.initial_amount {
