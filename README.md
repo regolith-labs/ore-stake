@@ -1,34 +1,33 @@
-# ORE
+# ORE Stake
 
-A staking protocol for ORE holders to receive a share of protocol revenues.
+A staking protocol for ORE holders to receive a share of protocol revenues. Rewards are distributed to stakers proportional to their stake and vest linearly over 1 hour.
 
 ## API
-- [`Consts`](api/src/consts.rs) – Program constants.
-- [`Error`](api/src/error.rs) – Custom program errors.
-- [`Event`](api/src/error.rs) – Custom program events.
-- [`Instruction`](api/src/instruction.rs) – Declared instructions and arguments.
+- [`Consts`](api/src/consts.rs) – Program constants.
+- [`Error`](api/src/error.rs) – Custom program errors.
+- [`Event`](api/src/event.rs) – Custom program events.
+- [`Instruction`](api/src/instruction.rs) – Declared instructions and arguments.
 
 ## Instructions
 
-
-#### Staking
-- [`Deposit`](program/src/deposit.rs) - Deposits ORE into a stake account.
-- [`Withdraw`](program/src/withdraw.rs) - Withdraws ORE from a stake account.
-- [`ClaimSeeker`](program/src/claim_seeker.rs) - Claims a Seeker genesis token. 
-- [`ClaimYield`](program/src/claim_yield.rs) - Claims staking yield.
-
-#### Misc
+#### Admin
+- [`Claim`](program/src/claim.rs) – Claims accrued staking rewards.
+- [`Close`](program/src/close.rs) – Closes a stake account and reclaims rent.
+- [`Compound`](program/src/compound.rs) – Compounds accrued rewards back into the stake deposit.
+- [`Deposit`](program/src/deposit.rs) – Deposits ORE into a stake account.
+- [`Distribute`](program/src/distribute.rs) – Distributes ORE to the treasury for vesting to stakers.
+- [`Init`](program/src/init.rs) – Initializes the program (treasury, treasury token account, and vesting account).
 - [`Log`](program/src/log.rs) – Logs non-truncatable event data.
-
+- [`Withdraw`](program/src/withdraw.rs) – Withdraws ORE from a stake account.
 
 ## State
-- [`Stake`](api/src/state/stake.rs) - Manages a user's staking activity.
-- [`Treasury`](api/src/state/treasury.rs) - Mints, burns, and escrows ORE tokens. 
-
+- [`Stake`](api/src/state/stake.rs) – A user's staking position (balance, rewards, compound fee settings).
+- [`Treasury`](api/src/state/treasury.rs) – Singleton tracking the global rewards factor and total staked amount.
+- [`Vesting`](api/src/state/vesting.rs) – Singleton tracking the current reward vesting schedule.
 
 ## Tests
 
-To run the test suite, use the Solana toolchain: 
+To run the test suite, use the Solana toolchain:
 
 ```
 cargo test-sbf
