@@ -1,6 +1,6 @@
 # ORE Stake
 
-A staking protocol for ORE holders to receive a share of protocol revenues. Rewards are distributed to stakers proportional to their stake and vest linearly over 1 hour.
+A staking protocol for ORE holders to receive a share of protocol revenues. 
 
 ## API
 - [`Consts`](api/src/consts.rs) – Program constants.
