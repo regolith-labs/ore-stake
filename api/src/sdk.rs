@@ -1,12 +1,9 @@
+use ore_mint_api::consts::MINT_ADDRESS;
 use solana_program::pubkey::Pubkey;
 use spl_associated_token_account::get_associated_token_address;
 use steel::*;
 
-use crate::{
-    consts::{MINT_ADDRESS, TREASURY},
-    instruction::*,
-    state::*,
-};
+use crate::{consts::TREASURY, instruction::*, state::*};
 
 pub fn log(signer: Pubkey, msg: &[u8]) -> Instruction {
     let mut data = Log {}.to_bytes();

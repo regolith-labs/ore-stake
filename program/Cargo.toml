@@ -18,6 +18,7 @@ name = "ore_stake"
 default = []
 
 [dependencies]
+ore-mint-api.workspace = true
 ore-stake-api.workspace = true
 solana-program.workspace = true
 solana-security-txt.workspace = true

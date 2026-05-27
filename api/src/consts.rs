@@ -17,6 +17,3 @@ pub const TREASURY: &[u8] = b"treasury";
 
 /// The seed of the vesting account PDA.
 pub const VESTING: &[u8] = b"vesting";
-
-/// The address of the mint account.
-pub const MINT_ADDRESS: Pubkey = pubkey!("oreoU2P8bN6jkk3jbaiVxYnG1dCXcYxwhwyK9jSybcp");

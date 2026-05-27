@@ -2680,6 +2680,7 @@ dependencies = [
  "base64 0.22.1",
  "bytemuck",
  "num_enum",
+ "ore-mint-api",
  "serde",
  "solana-program",
  "spl-associated-token-account",
@@ -2692,6 +2693,7 @@ dependencies = [
 name = "ore-stake-program"
 version = "0.2.2"
 dependencies = [
+ "ore-mint-api",
  "ore-stake-api",
  "rand 0.8.5",
  "solana-program",
