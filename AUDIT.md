@@ -149,6 +149,55 @@ The compound instruction verifies `stake_info.lamports() - compound_fee >= minim
 
 ---
 
+## MEV and Timing Attack Analysis
+
+### Sandwich attack on distribute
+
+An attacker could attempt to deposit before a `distribute` and withdraw after to capture a disproportionate share of rewards.
+
+**Mitigated by two defenses:**
+
+1. **vest-before-balance ordering.** In every instruction, `stake.deposit()` / `stake.withdraw()` / `stake.claim()` calls `update_rewards()` which calls `vest()` **before** modifying `balance` or `total_staked`. When the attacker's front-run deposit executes, pending vesting settles using the pre-attack `total_staked`. The attacker's balance is 0 during this settlement, so they earn nothing from prior vesting.
+
+2. **1-hour linear vesting.** After `distribute` sets `start_time = now`, the attacker's back-run withdraw calls `vest()` in the same block. With `time_elapsed = 0`, `vested_amount = 0` -- zero rewards are available. The attacker must remain staked for the full hour to capture their proportional share, at which point they are simply a regular staker.
+
+### Front-running vesting completion
+
+An attacker deposits at T+3599 (1 second before vesting completes) to capture the final vesting increment.
+
+**Mitigated:** The deposit triggers `vest()` at the pre-attack `total_staked`, settling 3599/3600 of the distribution to existing stakers. After the attacker's balance is added, only 1/3600 of the distribution remains, split across the now-diluted pool. The attacker's return is `(attacker_balance / new_total_staked) * (initial_amount / 3600)` -- negligible relative to the capital deployed.
+
+### Malicious leader clock manipulation
+
+Solana validators have bounded discretion over slot timestamps. A malicious leader could push the clock forward by a few seconds to vest slightly more tokens in their slot.
+
+**Bounded impact:** The Solana runtime constrains timestamps to be roughly monotonic and close to wall-clock time. The maximum gain is a few seconds of accelerated vesting (~0.1% of one distribution). This shifts timing but does not create tokens or steal from other stakers.
+
+### Compound fee sniping
+
+A malicious leader could censor competing bots' compound transactions and submit their own to collect the fee.
+
+**No protocol impact:** The staker outcome is identical regardless of which bot compounds -- same rewards re-deposited, same fee deducted. This is standard validator MEV, not a protocol vulnerability.
+
+### total_staked manipulation
+
+An attacker with a large share of the pool could withdraw to deflate `total_staked`, hoping to later re-deposit and benefit from the higher per-unit rewards distributed during their absence.
+
+**Self-defeating:** Withdraw calls `update_rewards` and syncs `rewards_factor` before reducing balance. The attacker forfeits all rewards that vest during their withdrawal. Re-depositing syncs to the new baseline. The remaining stakers benefit at the attacker's expense.
+
+### Treasury solvency under rounding
+
+The Numeric type (I80F48 fixed-point) truncates toward zero on division, multiplication, and `to_u64()` conversion. The full arithmetic chain is:
+
+1. `from_fraction(amount, total_staked)` -- truncates down
+2. `accumulated_rewards - self.rewards_factor` -- exact (same-precision subtraction)
+3. `accumulated * from_u64(balance)` -- truncates down
+4. `to_u64()` -- truncates fractional part
+
+All rounding is in the protocol's favor. The sum of all user rewards across the pool is always **less than or equal to** total distributed tokens. The treasury accumulates a small dust surplus over time and can never become insolvent from rounding.
+
+---
+
 ## Changes Made During Audit
 
 The following changes were applied during this audit session and are included in the reviewed code:
