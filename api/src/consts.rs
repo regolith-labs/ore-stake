@@ -1,5 +1,3 @@
-use solana_program::{pubkey, pubkey::Pubkey};
-
 /// The duration of one minute, in seconds.
 pub const ONE_MINUTE: i64 = 60;
 
