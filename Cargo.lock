@@ -2641,6 +2641,7 @@ dependencies = [
  "bytemuck",
  "dirs",
  "jupiter-swap-api-client",
+ "ore-mint-api",
  "ore-stake-api",
  "reqwest 0.11.27",
  "serde",
@@ -2655,6 +2656,21 @@ dependencies = [
  "spl-token 4.0.2",
  "steel",
  "tokio",
+]
+
+[[package]]
+name = "ore-mint-api"
+version = "0.1.3"
+source = "registry+https://github.com/rust-lang/crates.io-index"
+checksum = "2f589eedc80280ba56a9962d12c398529ae2121ebfc78a4acbc546b3a8c68386"
+dependencies = [
+ "bytemuck",
+ "num_enum",
+ "serde",
+ "solana-program",
+ "spl-associated-token-account",
+ "spl-token 4.0.2",
+ "steel",
 ]
 
 [[package]]
