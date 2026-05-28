@@ -29,7 +29,7 @@ pub fn process_instruction(
 
     match ix {
         OreStakeInstruction::Claim => process_claim(accounts, data)?,
-        OreStakeInstruction::Close => process_close(accounts)?,
+        OreStakeInstruction::Close => process_close(accounts, data)?,
         OreStakeInstruction::Compound => process_compound(accounts, data)?,
         OreStakeInstruction::Deposit => process_deposit(accounts, data)?,
         OreStakeInstruction::Distribute => process_distribute(accounts, data)?,

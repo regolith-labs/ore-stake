@@ -3,7 +3,7 @@ use ore_stake_api::prelude::*;
 use steel::*;
 
 /// Closes an empty stake account and returns rent to the payer.
-pub fn process_close(accounts: &[AccountInfo<'_>]) -> ProgramResult {
+pub fn process_close(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult {
     // Load accounts.
     let [signer_info, mint_info, recipient_info, stake_info, stake_tokens_info, system_program, token_program, associated_token_program] =
         accounts
