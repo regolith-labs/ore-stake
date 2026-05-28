@@ -2356,11 +2356,9 @@ dependencies = [
  "ore-mint-api",
  "ore-stake-api",
  "serde",
- "solana-account-decoder",
  "solana-client",
  "solana-program",
  "solana-sdk",
- "spl-associated-token-account",
  "spl-token 4.0.2",
  "steel",
  "tokio",
@@ -2385,7 +2383,6 @@ dependencies = [
 name = "ore-stake-api"
 version = "0.2.4"
 dependencies = [
- "base64 0.22.1",
  "bytemuck",
  "num_enum",
  "ore-mint-api",
@@ -2403,7 +2400,6 @@ version = "0.2.4"
 dependencies = [
  "ore-mint-api",
  "ore-stake-api",
- "rand 0.8.5",
  "solana-program",
  "solana-security-txt",
  "spl-associated-token-account",

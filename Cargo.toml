@@ -15,7 +15,6 @@ keywords = ["solana"]
 
 [workspace.dependencies]
 anyhow = "1.0"
-base64 = "0.22.1"
 bytemuck = "1.14.3"
 bytemuck_derive = "1.7.0"
 num_enum = "0.7.2"
@@ -24,7 +23,6 @@ ore-stake-api = { path = "./api" }
 solana-security-txt = "1.1.2"
 serde = { version = "1.0", features = ["derive"] }
 serde_json = "1.0"
-solana-account-decoder = "^2.1"
 solana-address-lookup-table-interface = { version = "=0.0.2", features = ["bincode"] }
 solana-program = "^2.1"
 solana-client = "^2.1"
