@@ -58,7 +58,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
 
     // Check for rent exemption.
     let minimum_rent = Rent::get()?.minimum_balance(stake_info.data_len());
-    if stake_info.lamports() - stake.compound_fee < minimum_rent {
+    if stake_info.lamports() < minimum_rent + stake.compound_fee {
         return Err(ProgramError::InsufficientFunds);
     }
 

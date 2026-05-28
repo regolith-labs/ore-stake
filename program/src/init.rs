@@ -12,9 +12,11 @@ pub fn process_init(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResult
     };
     signer_info.is_signer()?;
     ore_mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
-    treasury_info.is_writable()?;
+    treasury_info
+        .has_address(&treasury_pda().0)?
+        .is_writable()?;
     treasury_tokens_info.is_writable()?;
-    vesting_info.is_writable()?;
+    vesting_info.has_address(&vesting_pda().0)?.is_writable()?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;
