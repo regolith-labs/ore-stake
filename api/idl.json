@@ -859,18 +859,13 @@
     "errors": [
         {
             "code": 0,
-            "name": "AmountZero",
-            "msg": "Amount is zero"
-        },
-        {
-            "code": 1,
             "name": "NoDeposits",
             "msg": "No deposits"
         },
         {
-            "code": 2,
-            "name": "InsufficientBalance",
-            "msg": "Insufficient balance"
+            "code": 1,
+            "name": "InsufficientReserves",
+            "msg": "Insufficient reserves"
         }
     ],
     "metadata": {
