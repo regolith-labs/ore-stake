@@ -120,8 +120,8 @@ pub fn claim(signer: Pubkey, amount: u64) -> Instruction {
     }
 }
 
-pub fn compound(signer: Pubkey) -> Instruction {
-    let stake_address = stake_pda(signer).0;
+pub fn compound(signer: Pubkey, authority: Pubkey) -> Instruction {
+    let stake_address = stake_pda(authority).0;
     let mint_address = MINT_ADDRESS;
     let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);
     let treasury_address = treasury_pda().0;
@@ -142,6 +142,27 @@ pub fn compound(signer: Pubkey) -> Instruction {
             AccountMeta::new_readonly(crate::ID, false),
         ],
         data: Compound {}.to_bytes(),
+    }
+}
+
+pub fn close(signer: Pubkey) -> Instruction {
+    let mint_address = MINT_ADDRESS;
+    let stake_address = stake_pda(signer).0;
+    let stake_tokens_address = get_associated_token_address(&stake_address, &MINT_ADDRESS);
+    let recipient_address = get_associated_token_address(&signer, &MINT_ADDRESS);
+    Instruction {
+        program_id: crate::ID,
+        accounts: vec![
+            AccountMeta::new(signer, true),
+            AccountMeta::new_readonly(mint_address, false),
+            AccountMeta::new(recipient_address, false),
+            AccountMeta::new(stake_address, false),
+            AccountMeta::new(stake_tokens_address, false),
+            AccountMeta::new_readonly(system_program::ID, false),
+            AccountMeta::new_readonly(spl_token::ID, false),
+            AccountMeta::new_readonly(spl_associated_token_account::ID, false),
+        ],
+        data: Close {}.to_bytes(),
     }
 }
 
