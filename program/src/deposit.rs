@@ -9,6 +9,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     let amount = u64::from_le_bytes(args.amount);
     let compound_fee = u64::from_le_bytes(args.compound_fee);
     let compound_fee_deposit = u64::from_le_bytes(args.compound_fee_deposit);
+
     // Load accounts.
     let clock = Clock::get()?;
     let [signer_info, payer_info, mint_info, sender_info, stake_info, stake_tokens_info, treasury_info, vesting_info, system_program, token_program, associated_token_program, ore_stake_program] =
