@@ -7,9 +7,6 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     // Parse data.
     let args = Withdraw::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
-    if amount == 0 {
-        return Err(OreStakeError::AmountZero.into());
-    }
 
     // Load accounts.
     let clock = Clock::get()?;
@@ -24,7 +21,9 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     let stake = stake_info
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
         .assert_mut(|s| s.authority == *signer_info.key)?;
-    stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
+    stake_tokens_info
+        .is_writable()?
+        .as_associated_token_account(stake_info.key, mint_info.key)?;
     let treasury = treasury_info
         .has_address(&treasury_pda().0)?
         .as_account_mut::<Treasury>(&ore_stake_api::ID)?;
@@ -68,7 +67,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     let stake_tokens =
         stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
     if stake_tokens.amount() < stake.balance {
-        return Err(OreStakeError::InsufficientBalance.into());
+        return Err(OreStakeError::InsufficientReserves.into());
     }
 
     // Log event.

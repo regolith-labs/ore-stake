@@ -1,6 +1,6 @@
 # Security Policy
 
-### Reporting security problems in the ORE mining contract
+### Reporting security problems in the ORE staking contract
 
 **DO NOT CREATE A GITHUB ISSUE** to report a security problem.
 

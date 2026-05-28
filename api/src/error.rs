@@ -3,14 +3,11 @@ use steel::*;
 #[derive(Debug, Error, Clone, Copy, PartialEq, Eq, IntoPrimitive)]
 #[repr(u32)]
 pub enum OreStakeError {
-    #[error("Amount is zero")]
-    AmountZero = 0,
-
     #[error("No deposits")]
-    NoDeposits = 1,
+    NoDeposits = 0,
 
-    #[error("Insufficient balance")]
-    InsufficientBalance = 2,
+    #[error("Insufficient reserves")]
+    InsufficientReserves = 1,
 }
 
 error!(OreStakeError);

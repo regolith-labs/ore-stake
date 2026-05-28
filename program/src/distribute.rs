@@ -8,7 +8,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     let args = Distribute::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
     if amount == 0 {
-        return Err(OreStakeError::AmountZero.into());
+        return Ok(());
     }
 
     // Load accounts.
@@ -20,6 +20,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     };
     signer_info.is_signer()?;
     sender_info
+        .is_writable()?
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?
         .assert(|s| s.amount() >= amount)?;
     ore_mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
@@ -30,7 +31,9 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     let vesting = vesting_info
         .has_address(&vesting_pda().0)?
         .as_account_mut::<Vesting>(&ore_stake_api::ID)?;
-    treasury_tokens_info.as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
+    treasury_tokens_info
+        .is_writable()?
+        .as_associated_token_account(&treasury_info.key, &MINT_ADDRESS)?;
     token_program.is_program(&spl_token::ID)?;
     ore_stake_program.is_program(&ore_stake_api::ID)?;
 

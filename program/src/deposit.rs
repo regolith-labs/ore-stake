@@ -96,7 +96,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     let stake_tokens =
         stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
     if stake_tokens.amount() < stake.balance {
-        return Err(OreStakeError::InsufficientBalance.into());
+        return Err(OreStakeError::InsufficientReserves.into());
     }
 
     // Log event.

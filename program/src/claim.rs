@@ -7,9 +7,6 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
     // Parse data.
     let args = Claim::try_from_bytes(data)?;
     let amount = u64::from_le_bytes(args.amount);
-    if amount == 0 {
-        return Err(OreStakeError::AmountZero.into());
-    }
 
     // Load accounts.
     let clock = Clock::get()?;
