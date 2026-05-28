@@ -10,17 +10,15 @@ use solana_client::{
     rpc_filter::{Memcmp, RpcFilterType},
 };
 use solana_sdk::{
-    address_lookup_table::AddressLookupTableAccount,
     compute_budget::ComputeBudgetInstruction,
-    message::{v0::Message, VersionedMessage},
     native_token::lamports_to_sol,
     pubkey::Pubkey,
-    signature::{read_keypair_file, Signature, Signer},
-    transaction::{Transaction, VersionedTransaction},
+    signature::{read_keypair_file, Signer},
+    transaction::Transaction,
 };
 use spl_associated_token_account::get_associated_token_address;
 use spl_token::amount_to_ui_amount;
-use steel::{AccountDeserialize, Clock, Discriminator, Instruction};
+use steel::{AccountDeserialize, Clock, Discriminator};
 
 #[tokio::main]
 async fn main() {
@@ -186,86 +184,6 @@ async fn get_vesting(rpc: &RpcClient) -> Result<Vesting, anyhow::Error> {
     Ok(*vesting)
 }
 
-#[allow(dead_code)]
-async fn simulate_transaction(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-    instructions: &[solana_sdk::instruction::Instruction],
-) {
-    let blockhash = rpc.get_latest_blockhash().await.unwrap();
-    let x = rpc
-        .simulate_transaction(&Transaction::new_signed_with_payer(
-            instructions,
-            Some(&payer.pubkey()),
-            &[payer],
-            blockhash,
-        ))
-        .await;
-    println!("Simulation result: {:?}", x);
-}
-
-#[allow(dead_code)]
-async fn simulate_transaction_with_address_lookup_tables(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-    instructions: &[solana_sdk::instruction::Instruction],
-    address_lookup_table_accounts: Vec<AddressLookupTableAccount>,
-) {
-    let blockhash = rpc.get_latest_blockhash().await.unwrap();
-    let tx = VersionedTransaction {
-        signatures: vec![Signature::default()],
-        message: VersionedMessage::V0(
-            Message::try_compile(
-                &payer.pubkey(),
-                instructions,
-                &address_lookup_table_accounts,
-                blockhash,
-            )
-            .unwrap(),
-        ),
-    };
-    let s = tx.sanitize();
-    println!("Sanitize result: {:?}", s);
-    s.unwrap();
-    let x = rpc.simulate_transaction(&tx).await;
-    println!("Simulation result: {:?}", x);
-}
-
-#[allow(unused)]
-async fn submit_transaction_batches(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-    mut ixs: Vec<solana_sdk::instruction::Instruction>,
-    batch_size: usize,
-) -> Result<(), anyhow::Error> {
-    // Batch and submit the instructions.
-    while !ixs.is_empty() {
-        let batch = ixs
-            .drain(..std::cmp::min(batch_size, ixs.len()))
-            .collect::<Vec<Instruction>>();
-        submit_transaction_no_confirm(rpc, payer, &batch).await?;
-        // submit_transaction(rpc, payer, &batch).await?;
-    }
-    Ok(())
-}
-
-#[allow(unused)]
-async fn simulate_transaction_batches(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-    mut ixs: Vec<solana_sdk::instruction::Instruction>,
-    batch_size: usize,
-) -> Result<(), anyhow::Error> {
-    // Batch and submit the instructions.
-    while !ixs.is_empty() {
-        let batch = ixs
-            .drain(..std::cmp::min(batch_size, ixs.len()))
-            .collect::<Vec<Instruction>>();
-        simulate_transaction(rpc, payer, &batch).await;
-    }
-    Ok(())
-}
-
 async fn submit_transaction(
     rpc: &RpcClient,
     payer: &solana_sdk::signer::keypair::Keypair,
@@ -285,36 +203,6 @@ async fn submit_transaction(
     );
 
     match rpc.send_and_confirm_transaction(&transaction).await {
-        Ok(signature) => {
-            println!("Transaction submitted: {:?}", signature);
-            Ok(signature)
-        }
-        Err(e) => {
-            println!("Error submitting transaction: {:?}", e);
-            Err(e.into())
-        }
-    }
-}
-
-async fn submit_transaction_no_confirm(
-    rpc: &RpcClient,
-    payer: &solana_sdk::signer::keypair::Keypair,
-    instructions: &[solana_sdk::instruction::Instruction],
-) -> Result<solana_sdk::signature::Signature, anyhow::Error> {
-    let blockhash = rpc.get_latest_blockhash().await?;
-    let mut all_instructions = vec![
-        ComputeBudgetInstruction::set_compute_unit_limit(1_400_000),
-        ComputeBudgetInstruction::set_compute_unit_price(1_000_000),
-    ];
-    all_instructions.extend_from_slice(instructions);
-    let transaction = Transaction::new_signed_with_payer(
-        &all_instructions,
-        Some(&payer.pubkey()),
-        &[payer],
-        blockhash,
-    );
-
-    match rpc.send_transaction(&transaction).await {
         Ok(signature) => {
             println!("Transaction submitted: {:?}", signature);
             Ok(signature)

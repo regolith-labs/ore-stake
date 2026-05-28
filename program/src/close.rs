@@ -17,8 +17,9 @@ pub fn process_close(accounts: &[AccountInfo<'_>]) -> ProgramResult {
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
         .assert_mut(|s| s.authority == *signer_info.key)?
         .assert_mut(|s| s.balance == 0 && s.rewards == 0)?;
-    let stake_tokens =
-        stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
+    let stake_tokens = stake_tokens_info
+        .is_writable()?
+        .as_associated_token_account(stake_info.key, mint_info.key)?;
     system_program.is_program(&system_program::ID)?;
     token_program.is_program(&spl_token::ID)?;
     associated_token_program.is_program(&spl_associated_token_account::ID)?;

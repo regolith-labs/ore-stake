@@ -10,7 +10,6 @@ A staking protocol for ORE holders to receive a share of protocol revenues.
 
 ## Instructions
 
-#### Admin
 - [`Claim`](program/src/claim.rs) – Claims accrued staking rewards.
 - [`Close`](program/src/close.rs) – Closes a stake account and reclaims rent.
 - [`Compound`](program/src/compound.rs) – Compounds accrued rewards back into the stake deposit.
