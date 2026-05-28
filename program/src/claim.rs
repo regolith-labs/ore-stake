@@ -67,7 +67,7 @@ pub fn process_claim(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResult
     program_log(
         &[treasury_info.clone()],
         ClaimEvent {
-            disc: 0,
+            disc: OreStakeEvent::Claim as u64,
             authority: *signer_info.key,
             amount,
             ts: clock.unix_timestamp,

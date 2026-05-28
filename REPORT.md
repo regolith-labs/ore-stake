@@ -62,33 +62,6 @@ There is one global `Vesting` account. When a second distribute arrives before t
 
 **Impact:** Under rapid distribute cadence, rewards reach stakers more slowly than the 1-hour vesting period suggests.
 
-### 6. Compound rent-exemption check after state mutation
-
-**File:** `program/src/compound.rs:60-63`
-
-```rust
-let minimum_rent = Rent::get()?.minimum_balance(stake_info.data_len());
-if stake_info.lamports() - stake.compound_fee < minimum_rent {
-    return Err(ProgramError::InsufficientFunds);
-}
-```
-
-The claim and deposit mutations have already been applied to `stake` before this check. If the check fails, Solana reverts the entire transaction so there is no actual state corruption — but the subtraction `stake_info.lamports() - stake.compound_fee` could panic with overflow-checks enabled if `lamports() < compound_fee`, which would be an opaque abort rather than a clean error.
-
-**Impact:** Potential panic instead of clean error under edge conditions. No state corruption possible.
-
-### 7. `distribute` with `new_initial` overflow
-
-**File:** `program/src/distribute.rs:51`
-
-```rust
-let new_initial = vesting.initial_amount + amount;
-```
-
-If `vesting.initial_amount + amount` exceeds `u64::MAX`, this panics (overflow-checks enabled). This would brick the distribute instruction until the current vesting schedule completes. With ORE at 11 decimals, the cap is ~18.4 billion ORE which is likely safe, but there is no explicit guard.
-
-**Impact:** Theoretical DoS on distribute if extreme amounts are in play.
-
 ---
 
 ## Low Severity / Code Quality
@@ -193,7 +166,7 @@ The compute unit limit (1.4M) and price (1M micro-lamports) are hardcoded. The p
 | Severity | Count | Key Items |
 |----------|-------|-----------|
 | Critical/High | 2 | Orphaned rewards, permissionless init |
-| Medium | 5 | Fee overwrite, silent deposit cap, vesting interference, overflow risks |
+| Medium | 3 | Fee overwrite, silent deposit cap, vesting interference |
 | Low / Quality | 8 | Dead code, missing tests, inconsistencies |
 | Design Notes | 5 | Permissionless compound, no admin, precision loss |
 

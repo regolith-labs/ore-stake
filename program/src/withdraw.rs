@@ -74,7 +74,7 @@ pub fn process_withdraw(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramRes
     program_log(
         &[treasury_info.clone()],
         WithdrawEvent {
-            disc: 3,
+            disc: OreStakeEvent::Withdraw as u64,
             authority: *signer_info.key,
             amount,
             ts: clock.unix_timestamp,

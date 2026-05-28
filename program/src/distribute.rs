@@ -69,7 +69,7 @@ pub fn process_distribute(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramR
     program_log(
         &[treasury_info.clone()],
         DistributeEvent {
-            disc: 2,
+            disc: OreStakeEvent::Distribute as u64,
             amount,
             total_staked: treasury.total_staked,
             ts: clock.unix_timestamp,

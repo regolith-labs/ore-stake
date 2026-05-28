@@ -70,7 +70,7 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
     program_log(
         &[treasury_info.clone()],
         CompoundEvent {
-            disc: 4,
+            disc: OreStakeEvent::Compound as u64,
             authority: stake.authority,
             amount,
             ts: clock.unix_timestamp,

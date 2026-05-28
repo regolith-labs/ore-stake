@@ -104,7 +104,7 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     program_log(
         &[treasury_info.clone()],
         DepositEvent {
-            disc: 1,
+            disc: OreStakeEvent::Deposit as u64,
             authority: *signer_info.key,
             amount,
             ts: clock.unix_timestamp,
