@@ -56,6 +56,13 @@ pub fn process_compound(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramRe
         &[TREASURY],
     )?;
 
+    // Safety check.
+    let stake_tokens =
+        stake_tokens_info.as_associated_token_account(stake_info.key, mint_info.key)?;
+    if stake_tokens.amount() < stake.balance {
+        return Err(OreStakeError::InsufficientReserves.into());
+    }
+
     // Check for rent exemption.
     let minimum_rent = Rent::get()?.minimum_balance(stake_info.data_len());
     if stake_info.lamports() < minimum_rent + stake.compound_fee {
