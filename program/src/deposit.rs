@@ -48,9 +48,9 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
         stake.authority = *signer_info.key;
         stake.balance = 0;
         stake.compound_fee_reserve = 0;
-        stake.last_claim_at = 0;
-        stake.last_deposit_at = 0;
-        stake.last_withdraw_at = 0;
+        stake.last_claim_at = clock.unix_timestamp;
+        stake.last_deposit_at = clock.unix_timestamp;
+        stake.last_withdraw_at = clock.unix_timestamp;
         stake.rewards_factor = treasury.rewards_factor;
         stake.rewards = 0;
         stake.lifetime_rewards = 0;
