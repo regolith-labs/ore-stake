@@ -2348,7 +2348,7 @@ dependencies = [
 
 [[package]]
 name = "ore-cli"
-version = "0.2.5"
+version = "0.3.0"
 dependencies = [
  "anyhow",
  "bincode",
@@ -2382,7 +2382,7 @@ dependencies = [
 
 [[package]]
 name = "ore-stake-api"
-version = "0.2.5"
+version = "0.3.0"
 dependencies = [
  "bytemuck",
  "num_enum",
@@ -2397,7 +2397,7 @@ dependencies = [
 
 [[package]]
 name = "ore-stake-program"
-version = "0.2.5"
+version = "0.3.0"
 dependencies = [
  "ore-mint-api",
  "ore-stake-api",
