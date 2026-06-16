@@ -23,7 +23,9 @@ pub fn process_deposit(accounts: &[AccountInfo<'_>], data: &[u8]) -> ProgramResu
     let sender = sender_info
         .is_writable()?
         .as_associated_token_account(&signer_info.key, &MINT_ADDRESS)?;
-    stake_info.is_writable()?;
+    stake_info
+        .is_writable()?
+        .has_seeds(&[STAKE, &signer_info.key.to_bytes()], &ore_stake_api::ID)?;
     let treasury = treasury_info
         .has_address(&treasury_pda().0)?
         .as_account_mut::<Treasury>(&ore_stake_api::ID)?;

@@ -14,6 +14,7 @@ pub fn process_close(accounts: &[AccountInfo<'_>], _data: &[u8]) -> ProgramResul
     mint_info.has_address(&MINT_ADDRESS)?.as_mint()?;
     recipient_info.is_writable()?;
     let stake = stake_info
+        .has_seeds(&[STAKE, &signer_info.key.to_bytes()], &ore_stake_api::ID)?
         .as_account_mut::<Stake>(&ore_stake_api::ID)?
         .assert_mut(|s| s.authority == *signer_info.key)?
         .assert_mut(|s| s.balance == 0 && s.rewards == 0)?;
