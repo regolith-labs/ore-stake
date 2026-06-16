@@ -19,6 +19,7 @@ serde.workspace = true
 solana-client.workspace = true
 solana-sdk.workspace = true
 solana-program.workspace = true
+spl-associated-token-account.workspace = true
 spl-token.workspace = true
 steel.workspace = true
 tokio.workspace = true
