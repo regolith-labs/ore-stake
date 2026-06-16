@@ -30,7 +30,7 @@ solana-sdk = "^2.1"
 spl-pod = "=0.5.1"
 spl-token = { version = "^4", features = ["no-entrypoint"] }
 spl-associated-token-account = { version = "^6", features = [ "no-entrypoint" ] } 
-steel = { features = ["spl"], version = "4.0.4" }
+steel = { features = ["spl"], version = "4.0.8" }
 thiserror = "1.0.57"
 tokio = { version = "1.37.0", features = ["full"] }
 
